@@ -6,8 +6,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from lightgbm import LGBMClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -204,7 +203,7 @@ st.header("🤖 Modeling & Evaluasi")
 # Pilih Model
 model_option = st.selectbox(
     "**Pilih Model Klasifikasi:**",
-    ("Logistic Regression", "Random Forest", "LightGBM", "Gaussian Naive Bayes", "SVM")
+    ("Logistic Regression", "Random Forest", "Gaussian Naive Bayes", "SVM", "Gradient Boosting")
 )
 
 # Inisialisasi Model
@@ -222,13 +221,6 @@ elif model_option == "Random Forest":
     - **Kelebihan:** Baik untuk data kompleks, resistance terhadap overfitting
     - **Kekurangan:** Lebih lambat, hard to interpret
     """
-elif model_option == "LightGBM":
-    model = LGBMClassifier(random_state=42, verbose=-1)
-    model_description = """
-    **LightGBM** (Light Gradient Boosting Machine) adalah algoritma boosting yang cepat dan efisien dengan memory usage rendah.
-    - **Kelebihan:** Sangat cepat, memory efficient, baik untuk large datasets
-    - **Kekurangan:** Bisa overfit pada small datasets
-    """
 elif model_option == "Gaussian Naive Bayes":
     model = GaussianNB()
     model_description = """
@@ -242,6 +234,13 @@ elif model_option == "SVM":
     **Support Vector Machine (SVM)** mencari hyperplane optimal yang memaksimalkan margin antar kelas.
     - **Kelebihan:** Baik untuk high-dimensional data, versatile dengan kernel trick
     - **Kekurangan:** Slow untuk large datasets, sulit untuk interpret
+    """
+elif model_option == "Gradient Boosting":
+    model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
+    model_description = """
+    **Gradient Boosting** membangun ensemble decision trees secara sequential untuk meminimalkan error.
+    - **Kelebihan:** Akurasi tinggi, baik untuk complex patterns, lebih stabil dari XGBoost
+    - **Kekurangan:** Lambat untuk training, rentan overfitting jika parameter tidak optimal
     """
 
 st.write("**Model Information:**")
@@ -411,28 +410,6 @@ elif model_option == "Random Forest":
     st.write("**Top Features:**")
     st.write(feature_importance)
 
-elif model_option == "LightGBM":
-    st.write("**6️⃣ Feature Importance (LightGBM):**")
-    st.info("LightGBM menggunakan importance berdasarkan gain dan split count yang berkontribusi pada pengurangan loss.")
-    
-    feature_importance = pd.DataFrame({
-        'Feature': X_train.columns,
-        'Importance': model.feature_importances_
-    }).sort_values('Importance', ascending=False).head(10)
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    fig.patch.set_facecolor('white')
-    colors_importance = RED_TO_GOLD[:len(feature_importance)]
-    ax.barh(feature_importance['Feature'], feature_importance['Importance'], color=colors_importance, alpha=0.6, edgecolor=PRIMARY_COLOR)
-    ax.set_xlabel('Gain (Importance)', fontweight='bold')
-    ax.set_title('Top 10 Feature Importance - LightGBM', fontweight='bold', color=PRIMARY_COLOR)
-    ax.invert_yaxis()
-    ax.grid(axis='x', alpha=0.3)
-    st.pyplot(fig)
-    
-    st.write("**Top Features:**")
-    st.write(feature_importance)
-
 elif model_option == "Gaussian Naive Bayes":
     st.write("**6️⃣ Model Parameters (Gaussian Naive Bayes):**")
     st.info("Gaussian Naive Bayes menggunakan prior probability dan conditional probability berdasarkan distribusi Gaussian.")
@@ -486,6 +463,28 @@ elif model_option == "SVM":
     st.write(f"**Total Support Vectors:** {len(model.support_)}")
     st.write(f"**Percentage of Training Data:** {len(model.support_) / len(X_train) * 100:.1f}%")
 
+elif model_option == "Gradient Boosting":
+    st.write("**6️⃣ Feature Importance (Gradient Boosting):**")
+    st.info("Gradient Boosting menampilkan feature importance berdasarkan kontribusi setiap fitur terhadap pengurangan loss di semua trees.")
+    
+    feature_importance = pd.DataFrame({
+        'Feature': X_train.columns,
+        'Importance': model.feature_importances_
+    }).sort_values('Importance', ascending=False).head(10)
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    fig.patch.set_facecolor('white')
+    colors_importance = RED_TO_GOLD[:len(feature_importance)]
+    ax.barh(feature_importance['Feature'], feature_importance['Importance'], color=colors_importance, alpha=0.6, edgecolor=PRIMARY_COLOR)
+    ax.set_xlabel('Importance', fontweight='bold')
+    ax.set_title('Top 10 Feature Importance - Gradient Boosting', fontweight='bold', color=PRIMARY_COLOR)
+    ax.invert_yaxis()
+    ax.grid(axis='x', alpha=0.3)
+    st.pyplot(fig)
+    
+    st.write("**Top Features:**")
+    st.write(feature_importance)
+
 # ROC Curve (untuk semua algoritma)
 st.write("**7️⃣ ROC Curve (One-vs-Rest):**")
 from sklearn.metrics import roc_curve, auc
@@ -523,9 +522,9 @@ st.header("🏆 Rekomendasi Model Terbaik")
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000),
     "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
-    "LightGBM": LGBMClassifier(random_state=42, verbose=-1),
     "Gaussian Naive Bayes": GaussianNB(),
-    "SVM": SVC(probability=True, random_state=42)
+    "SVM": SVC(probability=True, random_state=42),
+    "Gradient Boosting": GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
 }
 
 results = []
@@ -537,12 +536,13 @@ for name, model in models.items():
 
 # Tampilkan Hasil
 results_df = pd.DataFrame(results).sort_values("Accuracy", ascending=False)
+results_df["Accuracy"] = results_df["Accuracy"].round(4)  # Ensure all are floats
 st.write("**Perbandingan Akurasi Model:**")
 st.write(results_df)
 
 # Visualisasi Perbandingan
 fig, ax = plt.subplots(figsize=(10, 5))
-sns.barplot(x="Accuracy", y="Model", data=results_df, palette=RED_TO_GOLD[:len(results_df)], ax=ax)
+sns.barplot(x="Accuracy", y="Model", data=results_df, palette=RED_TO_GOLD[:len(results_df)], ax=ax, hue="Model", legend=False)
 ax.set_facecolor('#f8f9fa')
 fig.patch.set_facecolor('white')
 plt.title("Perbandingan Akurasi Model", fontsize=14, fontweight='bold', color=PRIMARY_COLOR)
@@ -552,4 +552,4 @@ st.pyplot(fig)
 
 # Rekomendasi Model Terbaik
 best_model = results_df.iloc[0]
-st.success(f"**Rekomendasi Model Terbaik:** `{best_model['Model']}` (Akurasi: `{best_model['Accuracy']:.2f}`)")
+st.success(f"**Rekomendasi Model Terbaik:** `{best_model['Model']}` (Akurasi: `{best_model['Accuracy']:.4f}`)")
