@@ -49,8 +49,8 @@ st.info("""
 # Load Dataset Lokal
 @st.cache_data
 def load_data():
-    # Ganti dengan path dataset lokal Anda
-    df = pd.read_csv("C:/Users/hehehe/Documents/UASML/weather_classification_data.csv")
+    # Gunakan relative path agar bekerja di cloud
+    df = pd.read_csv("weather_classification_data.csv")
     return df
 
 df = load_data()
