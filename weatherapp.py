@@ -536,9 +536,9 @@ for name, model in models.items():
 
 # Tampilkan Hasil
 results_df = pd.DataFrame(results).sort_values("Accuracy", ascending=False)
-results_df["Accuracy"] = results_df["Accuracy"].round(4)  # Ensure all are floats
+results_df["Accuracy"] = results_df["Accuracy"].round(4).astype(str)  # Convert to string for safe display
 st.write("**Perbandingan Akurasi Model:**")
-st.write(results_df)
+st.dataframe(results_df, use_container_width=True)
 
 # Visualisasi Perbandingan
 fig, ax = plt.subplots(figsize=(10, 5))
