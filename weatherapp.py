@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
@@ -204,7 +204,7 @@ st.header("🤖 Modeling & Evaluasi")
 # Pilih Model
 model_option = st.selectbox(
     "**Pilih Model Klasifikasi:**",
-    ("Logistic Regression", "Random Forest", "XGBoost", "Gaussian Naive Bayes", "SVM")
+    ("Logistic Regression", "Random Forest", "LightGBM", "Gaussian Naive Bayes", "SVM")
 )
 
 # Inisialisasi Model
@@ -222,12 +222,12 @@ elif model_option == "Random Forest":
     - **Kelebihan:** Baik untuk data kompleks, resistance terhadap overfitting
     - **Kekurangan:** Lebih lambat, hard to interpret
     """
-elif model_option == "XGBoost":
-    model = XGBClassifier(random_state=42, use_label_encoder=False, eval_metric='mlogloss')
+elif model_option == "LightGBM":
+    model = LGBMClassifier(random_state=42, verbose=-1)
     model_description = """
-    **XGBoost** (Extreme Gradient Boosting) adalah algoritma boosting yang powerful dengan gradient descent optimization.
-    - **Kelebihan:** Akurasi tinggi, fast training, handling imbalanced data
-    - **Kekurangan:** Complex, risk of overfitting jika tidak di-tune dengan baik
+    **LightGBM** (Light Gradient Boosting Machine) adalah algoritma boosting yang cepat dan efisien dengan memory usage rendah.
+    - **Kelebihan:** Sangat cepat, memory efficient, baik untuk large datasets
+    - **Kekurangan:** Bisa overfit pada small datasets
     """
 elif model_option == "Gaussian Naive Bayes":
     model = GaussianNB()
@@ -411,9 +411,9 @@ elif model_option == "Random Forest":
     st.write("**Top Features:**")
     st.write(feature_importance)
 
-elif model_option == "XGBoost":
-    st.write("**6️⃣ Feature Importance (XGBoost):**")
-    st.info("XGBoost menggunakan importance berdasarkan gain (peningkatan akurasi) yang disumbangkan setiap fitur.")
+elif model_option == "LightGBM":
+    st.write("**6️⃣ Feature Importance (LightGBM):**")
+    st.info("LightGBM menggunakan importance berdasarkan gain dan split count yang berkontribusi pada pengurangan loss.")
     
     feature_importance = pd.DataFrame({
         'Feature': X_train.columns,
@@ -425,7 +425,7 @@ elif model_option == "XGBoost":
     colors_importance = RED_TO_GOLD[:len(feature_importance)]
     ax.barh(feature_importance['Feature'], feature_importance['Importance'], color=colors_importance, alpha=0.6, edgecolor=PRIMARY_COLOR)
     ax.set_xlabel('Gain (Importance)', fontweight='bold')
-    ax.set_title('Top 10 Feature Importance - XGBoost', fontweight='bold', color=PRIMARY_COLOR)
+    ax.set_title('Top 10 Feature Importance - LightGBM', fontweight='bold', color=PRIMARY_COLOR)
     ax.invert_yaxis()
     ax.grid(axis='x', alpha=0.3)
     st.pyplot(fig)
@@ -523,7 +523,7 @@ st.header("🏆 Rekomendasi Model Terbaik")
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000),
     "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
-    "XGBoost": XGBClassifier(random_state=42, use_label_encoder=False, eval_metric='mlogloss'),
+    "LightGBM": LGBMClassifier(random_state=42, verbose=-1),
     "Gaussian Naive Bayes": GaussianNB(),
     "SVM": SVC(probability=True, random_state=42)
 }
