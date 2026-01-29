@@ -14,7 +14,7 @@ from sklearn.preprocessing import label_binarize
 
 # ====================== Konfigurasi Streamlit & Theme ======================
 st.set_page_config(
-    page_title="Weather Classification ML",
+    page_title="Klasifikasi Cuaca ML",
     page_icon="🌦️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -30,7 +30,7 @@ plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
 
 # Judul Header
-st.markdown(f"<h1 style='color:{PRIMARY_COLOR}; text-align:center;'>🌦️ Weather Classification ML</h1>", unsafe_allow_html=True)
+st.markdown(f"<h1 style='color:{PRIMARY_COLOR}; text-align:center;'>🌦️ Klasifikasi Cuaca ML</h1>", unsafe_allow_html=True)
 
 # Load Dataset
 @st.cache_data
@@ -91,7 +91,7 @@ df = data['df']
 
 # ====================== TAB NAVIGATION ======================
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-    ["📖 About Dataset", "📊 Dashboard", "🤖 Machine Learning", "🏆 Cara Kerja Model Terbaik", "🎯 Prediction App", "📧 Contact Me"]
+    ["📖 Tentang Dataset", "📊 Dashboard", "🤖 Machine Learning", "🏆 Model Terbaik", "🎯 Prediksi", "📧 Hubungi Saya"]
 )
 
 # ====================== TAB 1: ABOUT DATASET ======================
@@ -108,8 +108,8 @@ with tab1:
         """)
     
     with col2:
-        st.metric("Total Records", len(df))
-        st.metric("Total Features", len(df.columns))
+        st.metric("Total Rekam", len(df))
+        st.metric("Total Fitur", len(df.columns))
     
     st.markdown("---")
     
@@ -148,7 +148,7 @@ with tab1:
     
     st.markdown("---")
     
-    st.subheader("📊 Data Preview")
+    st.subheader("📊 Pratinjau Data")
     st.write("**5 Baris Pertama:**")
     st.dataframe(df.head(), use_container_width=True)
     
@@ -157,30 +157,30 @@ with tab1:
 
 # ====================== TAB 2: DASHBOARD ======================
 with tab2:
-    st.header("📊 Dashboard - Exploratory Data Analysis")
+    st.header("📊 Dashboard - Analisis Data Eksploratori")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🎯 Distribusi Weather Type")
+        st.subheader("🎯 Distribusi Tipe Cuaca")
         fig, ax = plt.subplots(figsize=(8, 5))
         weather_counts = df["Weather Type"].value_counts()
         colors = RED_TO_GOLD[:len(weather_counts)]
         ax.bar(weather_counts.index, weather_counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel("Count", fontweight='bold')
-        ax.set_title("Jumlah Data per Weather Type", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel("Jumlah", fontweight='bold')
+        ax.set_title("Jumlah Data per Tipe Cuaca", fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     with col2:
-        st.subheader("📈 Proporsi Weather Type")
+        st.subheader("📈 Proporsi Tipe Cuaca")
         fig, ax = plt.subplots(figsize=(8, 5))
         weather_props = df["Weather Type"].value_counts(normalize=True) * 100
         colors = RED_TO_GOLD[:len(weather_props)]
         wedges, texts, autotexts = ax.pie(weather_props.values, labels=weather_props.index, autopct='%1.1f%%',
                                             colors=colors, startangle=90)
-        ax.set_title("Proporsi Weather Type", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_title("Proporsi Tipe Cuaca", fontweight='bold', color=PRIMARY_COLOR)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
@@ -189,23 +189,23 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🌡️ Distribusi Temperature")
+        st.subheader("🌡️ Distribusi Suhu")
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.hist(df["Temperature"], bins=30, color=SECONDARY_COLOR, alpha=0.7, edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel("Temperature (°C)", fontweight='bold')
-        ax.set_ylabel("Frequency", fontweight='bold')
-        ax.set_title("Distribusi Temperature", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel("Suhu (°C)", fontweight='bold')
+        ax.set_ylabel("Frekuensi", fontweight='bold')
+        ax.set_title("Distribusi Suhu", fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     with col2:
-        st.subheader("💨 Distribusi Wind Speed")
+        st.subheader("💨 Distribusi Kecepatan Angin")
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.hist(df["Wind Speed"], bins=30, color=ACCENT_COLOR, alpha=0.7, edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel("Wind Speed (km/h)", fontweight='bold')
-        ax.set_ylabel("Frequency", fontweight='bold')
-        ax.set_title("Distribusi Wind Speed", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel("Kecepatan Angin (km/jam)", fontweight='bold')
+        ax.set_ylabel("Frekuensi", fontweight='bold')
+        ax.set_title("Distribusi Kecepatan Angin", fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
@@ -215,29 +215,29 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("☁️ Distribusi Cloud Cover by Weather Type")
+        st.subheader("☁️ Distribusi Tutupan Awan per Tipe Cuaca")
         fig, ax = plt.subplots(figsize=(8, 5))
         cloud_weather = pd.crosstab(df["Cloud Cover"], df["Weather Type"])
         cloud_weather.plot(kind='bar', ax=ax, color=RED_TO_GOLD, alpha=0.8, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel("Count", fontweight='bold')
-        ax.set_xlabel("Cloud Cover", fontweight='bold')
-        ax.set_title("Hubungan Cloud Cover dengan Weather Type", fontweight='bold', color=PRIMARY_COLOR)
-        ax.legend(title="Weather Type", bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.set_ylabel("Jumlah", fontweight='bold')
+        ax.set_xlabel("Tutupan Awan", fontweight='bold')
+        ax.set_title("Hubungan Tutupan Awan dengan Tipe Cuaca", fontweight='bold', color=PRIMARY_COLOR)
+        ax.legend(title="Tipe Cuaca", bbox_to_anchor=(1.05, 1), loc='upper left')
         ax.grid(axis='y', alpha=0.3)
         fig.tight_layout()
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     with col2:
-        st.subheader("☀️ Distribusi UV Index by Weather Type")
+        st.subheader("☀️ Distribusi Indeks UV per Tipe Cuaca")
         fig, ax = plt.subplots(figsize=(8, 5))
         weather_types = df["Weather Type"].unique()
         for i, weather in enumerate(weather_types):
             data = df[df["Weather Type"] == weather]["UV Index"]
             ax.hist(data, bins=20, alpha=0.6, label=weather, color=RED_TO_GOLD[i % len(RED_TO_GOLD)], edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel("UV Index", fontweight='bold')
-        ax.set_ylabel("Frequency", fontweight='bold')
-        ax.set_title("Distribusi UV Index per Weather Type", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel("Indeks UV", fontweight='bold')
+        ax.set_ylabel("Frekuensi", fontweight='bold')
+        ax.set_title("Distribusi Indeks UV per Tipe Cuaca", fontweight='bold', color=PRIMARY_COLOR)
         ax.legend()
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
@@ -248,37 +248,37 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🍂 Distribusi Season")
+        st.subheader("🍂 Distribusi Musim")
         fig, ax = plt.subplots(figsize=(8, 5))
         season_counts = df["Season"].value_counts()
         colors = RED_TO_GOLD[:len(season_counts)]
         ax.bar(season_counts.index, season_counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel("Count", fontweight='bold')
-        ax.set_title("Jumlah Data per Season", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel("Jumlah", fontweight='bold')
+        ax.set_title("Jumlah Data per Musim", fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     with col2:
-        st.subheader("📍 Distribusi Location")
+        st.subheader("📍 Distribusi Lokasi")
         fig, ax = plt.subplots(figsize=(8, 5))
         location_counts = df["Location"].value_counts()
         colors = RED_TO_GOLD[:len(location_counts)]
         ax.bar(location_counts.index, location_counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel("Count", fontweight='bold')
-        ax.set_title("Jumlah Data per Location", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel("Jumlah", fontweight='bold')
+        ax.set_title("Jumlah Data per Lokasi", fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     st.markdown("---")
     
-    st.subheader("💧 Distribusi Humidity")
+    st.subheader("💧 Distribusi Kelembaban")
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.hist(df["Humidity"], bins=30, color=SECONDARY_COLOR, alpha=0.7, edgecolor=PRIMARY_COLOR)
-    ax.set_xlabel("Humidity (%)", fontweight='bold')
-    ax.set_ylabel("Frequency", fontweight='bold')
-    ax.set_title("Distribusi Humidity", fontweight='bold', color=PRIMARY_COLOR)
+    ax.set_xlabel("Kelembaban (%)", fontweight='bold')
+    ax.set_ylabel("Frekuensi", fontweight='bold')
+    ax.set_title("Distribusi Kelembaban", fontweight='bold', color=PRIMARY_COLOR)
     ax.grid(axis='y', alpha=0.3)
     fig.patch.set_facecolor('white')
     st.pyplot(fig)
@@ -286,7 +286,7 @@ with tab2:
     st.markdown("---")
     
     # Distribution Analysis Explanations
-    st.subheader("📚 Analisis Distribusi Features")
+    st.subheader("📚 Analisis Distribusi Fitur")
     
     st.markdown("""
     **☁️ Cloud Cover (Tutupan Awan):**
@@ -351,8 +351,8 @@ with tab3:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     st.success(f"✅ Data preprocessing selesai!")
-    st.write(f"- Training set: {len(X_train)} samples")
-    st.write(f"- Testing set: {len(X_test)} samples")
+    st.write(f"- Data latihan: {len(X_train)} sampel")
+    st.write(f"- Data pengujian: {len(X_test)} sampel")
     
     st.markdown("---")
     
@@ -361,12 +361,12 @@ with tab3:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.write("**Before Preprocessing (Raw Data)**")
+        st.write("**Sebelum Preprocessing (Data Mentah)**")
         fig, ax = plt.subplots(figsize=(8, 5))
         numerical_cols_raw = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
                               "Atmospheric Pressure", "UV Index", "Visibility (km)"]
         ax.boxplot([df[col].values for col in numerical_cols_raw], labels=numerical_cols_raw)
-        ax.set_ylabel("Value", fontweight='bold')
+        ax.set_ylabel("Nilai", fontweight='bold')
         ax.set_title("Data Numerik Sebelum Scaling", fontweight='bold', color=PRIMARY_COLOR)
         ax.tick_params(axis='x', rotation=45)
         fig.tight_layout()
@@ -374,11 +374,11 @@ with tab3:
         st.pyplot(fig)
     
     with col2:
-        st.write("**After Preprocessing (Scaled Data)**")
+        st.write("**Setelah Preprocessing (Data Terskalakan)**")
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.boxplot([df_processed[col].values for col in numerical_cols], labels=numerical_cols)
-        ax.set_ylabel("Scaled Value", fontweight='bold')
-        ax.set_title("Data Numerik Setelah Standardization", fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel("Nilai Terskalakan", fontweight='bold')
+        ax.set_title("Data Numerik Setelah Standardisasi", fontweight='bold', color=PRIMARY_COLOR)
         ax.tick_params(axis='x', rotation=45)
         fig.tight_layout()
         fig.patch.set_facecolor('white')
@@ -389,7 +389,7 @@ with tab3:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.write("**Categorical Features Before Encoding**")
+        st.write("**Fitur Kategorikal Sebelum Encoding**")
         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
         categorical_cols = ["Cloud Cover", "Season", "Location"]
         for idx, col in enumerate(categorical_cols):
@@ -397,7 +397,7 @@ with tab3:
             colors = RED_TO_GOLD[:len(counts)]
             axes[idx].bar(counts.index, counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
             axes[idx].set_title(f"Distribusi {col}", fontweight='bold', color=PRIMARY_COLOR)
-            axes[idx].set_ylabel("Count", fontweight='bold')
+            axes[idx].set_ylabel("Jumlah", fontweight='bold')
             axes[idx].tick_params(axis='x', rotation=45)
             axes[idx].grid(axis='y', alpha=0.3)
         fig.tight_layout()
@@ -405,26 +405,26 @@ with tab3:
         st.pyplot(fig)
     
     with col2:
-        st.write("**Categorical Features After Encoding**")
+        st.write("**Fitur Kategorikal Setelah Encoding**")
         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
         for idx, col in enumerate(categorical_cols):
             encoded_vals = df_processed[col].value_counts().sort_index()
             colors = RED_TO_GOLD[:len(encoded_vals)]
             axes[idx].bar(encoded_vals.index, encoded_vals.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
             axes[idx].set_title(f"Encoded {col}", fontweight='bold', color=PRIMARY_COLOR)
-            axes[idx].set_ylabel("Count", fontweight='bold')
-            axes[idx].set_xlabel("Encoded Value", fontweight='bold')
+            axes[idx].set_ylabel("Jumlah", fontweight='bold')
+            axes[idx].set_xlabel("Nilai Encoded", fontweight='bold')
             axes[idx].grid(axis='y', alpha=0.3)
         fig.tight_layout()
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     st.info("""
-    **Data Cleaning & Preprocessing Explanation:**
-    - **Numerical Features**: Menggunakan StandardScaler untuk normalisasi agar semua fitur memiliki skala yang sama (mean=0, std=1)
-    - **Categorical Features**: Menggunakan LabelEncoder untuk mengkonversi kategori string menjadi integer values
+    **Penjelasan Data Cleaning & Preprocessing:**
+    - **Fitur Numerik**: Menggunakan StandardScaler untuk normalisasi agar semua fitur memiliki skala yang sama (mean=0, std=1)
+    - **Fitur Kategorikal**: Menggunakan LabelEncoder untuk mengkonversi kategori string menjadi nilai integer
     - **Train-Test Split**: Dataset dibagi 80-20 untuk pelatihan dan pengujian dengan random_state=42 untuk reproducibility
-    - **Target Variable**: Weather Type dienkode menjadi numerical values untuk proses klasifikasi
+    - **Variabel Target**: Weather Type dienkode menjadi nilai numerik untuk proses klasifikasi
     """)
     
     st.markdown("---")
@@ -487,24 +487,24 @@ with tab3:
     st.markdown("---")
     
     # Confusion Matrix
-    st.subheader("🔍 Confusion Matrix")
+    st.subheader("🔍 Matriks Kebingungan (Confusion Matrix)")
     cm = confusion_matrix(y_test, y_pred)
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='d', cmap='RdYlGn', xticklabels=class_labels,
-                yticklabels=class_labels, ax=ax, cbar_kws={'label': 'Count'})
-    ax.set_ylabel('True Label', fontweight='bold')
-    ax.set_xlabel('Predicted Label', fontweight='bold')
-    ax.set_title(f'Confusion Matrix - {model_option}', fontweight='bold', color=PRIMARY_COLOR)
+                yticklabels=class_labels, ax=ax, cbar_kws={'label': 'Jumlah'})
+    ax.set_ylabel('Label Sebenarnya', fontweight='bold')
+    ax.set_xlabel('Label Prediksi', fontweight='bold')
+    ax.set_title(f'Matriks Kebingungan - {model_option}', fontweight='bold', color=PRIMARY_COLOR)
     fig.patch.set_facecolor('white')
     st.pyplot(fig)
     
     # Per-Class Metrics
-    st.subheader("📊 Per-Class Metrics")
+    st.subheader("📊 Metrik per Kelas")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.write("**Precision per Class:**")
+        st.write("**Precision per Kelas:**")
         precision_scores = precision_score(y_test, y_pred, average=None)
         fig, ax = plt.subplots(figsize=(8, 5))
         colors_precision = RED_TO_GOLD[:len(class_labels)]
@@ -516,7 +516,7 @@ with tab3:
         st.pyplot(fig)
     
     with col2:
-        st.write("**Recall per Class:**")
+        st.write("**Recall per Kelas:**")
         recall_scores = recall_score(y_test, y_pred, average=None)
         fig, ax = plt.subplots(figsize=(8, 5))
         colors_recall = RED_TO_GOLD[:len(class_labels)]
@@ -528,7 +528,7 @@ with tab3:
         st.pyplot(fig)
     
     with col3:
-        st.write("**F1-Score per Class:**")
+        st.write("**F1-Score per Kelas:**")
         f1_scores = f1_score(y_test, y_pred, average=None)
         fig, ax = plt.subplots(figsize=(8, 5))
         colors_f1 = RED_TO_GOLD[:len(class_labels)]
@@ -541,10 +541,10 @@ with tab3:
     
     # Algorithm-Specific Visualizations
     st.markdown("---")
-    st.subheader("🔬 Algorithm-Specific Visualization")
+    st.subheader("🔬 Visualisasi Spesifik Algoritma")
     
     if model_option == "Logistic Regression":
-        st.write("**Feature Coefficients:**")
+        st.write("**Koefisien Fitur:**")
         coef_df = pd.DataFrame({
             'Feature': X_train.columns,
             'Coefficient': model.coef_[0]
@@ -553,13 +553,13 @@ with tab3:
         fig, ax = plt.subplots(figsize=(10, 6))
         colors = [SECONDARY_COLOR if x > 0 else ACCENT_COLOR for x in coef_df['Coefficient']]
         ax.barh(coef_df['Feature'], coef_df['Coefficient'], color=colors, alpha=0.6, edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel('Coefficient Value', fontweight='bold')
-        ax.set_title('Feature Coefficients - Logistic Regression', fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel('Nilai Koefisien', fontweight='bold')
+        ax.set_title('Koefisien Fitur - Logistic Regression', fontweight='bold', color=PRIMARY_COLOR)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     elif model_option == "Random Forest":
-        st.write("**Feature Importance (Top 10):**")
+        st.write("**Kepentingan Fitur (Top 10):**")
         feature_importance = pd.DataFrame({
             'Feature': X_train.columns,
             'Importance': model.feature_importances_
@@ -568,15 +568,15 @@ with tab3:
         fig, ax = plt.subplots(figsize=(10, 6))
         colors_importance = RED_TO_GOLD[:len(feature_importance)]
         ax.barh(feature_importance['Feature'], feature_importance['Importance'], color=colors_importance, alpha=0.6, edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel('Importance', fontweight='bold')
-        ax.set_title('Top 10 Feature Importance - Random Forest', fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel('Kepentingan', fontweight='bold')
+        ax.set_title('Top 10 Kepentingan Fitur - Random Forest', fontweight='bold', color=PRIMARY_COLOR)
         ax.invert_yaxis()
         ax.grid(axis='x', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     elif model_option == "Gradient Boosting":
-        st.write("**Feature Importance (Top 10):**")
+        st.write("**Kepentingan Fitur (Top 10):**")
         feature_importance = pd.DataFrame({
             'Feature': X_train.columns,
             'Importance': model.feature_importances_
@@ -585,15 +585,15 @@ with tab3:
         fig, ax = plt.subplots(figsize=(10, 6))
         colors_importance = RED_TO_GOLD[:len(feature_importance)]
         ax.barh(feature_importance['Feature'], feature_importance['Importance'], color=colors_importance, alpha=0.6, edgecolor=PRIMARY_COLOR)
-        ax.set_xlabel('Importance', fontweight='bold')
-        ax.set_title('Top 10 Feature Importance - Gradient Boosting', fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_xlabel('Kepentingan', fontweight='bold')
+        ax.set_title('Top 10 Kepentingan Fitur - Gradient Boosting', fontweight='bold', color=PRIMARY_COLOR)
         ax.invert_yaxis()
         ax.grid(axis='x', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     elif model_option == "Gaussian Naive Bayes":
-        st.write("**Prior Probabilities (P(Class)):**")
+        st.write("**Probabilitas Prior (P(Kelas)):**")
         class_counts = pd.Series(y_train).value_counts().sort_index()
         prior_probs = class_counts / len(y_train)
         prior_probs.index = class_labels
@@ -601,15 +601,15 @@ with tab3:
         fig, ax = plt.subplots(figsize=(8, 5))
         colors_prior = RED_TO_GOLD[:len(class_labels)]
         ax.bar(class_labels, prior_probs.values, color=colors_prior, alpha=0.6, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel('Prior Probability', fontweight='bold')
-        ax.set_title('Prior Probabilities - Gaussian Naive Bayes', fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel('Probabilitas Prior', fontweight='bold')
+        ax.set_title('Probabilitas Prior - Gaussian Naive Bayes', fontweight='bold', color=PRIMARY_COLOR)
         ax.set_ylim([0, max(prior_probs.values) * 1.2])
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
     
     elif model_option == "SVM":
-        st.write("**Support Vectors per Class:**")
+        st.write("**Vektor Pendukung per Kelas:**")
         support_info = pd.DataFrame({
             'Class': class_labels,
             'N Support Vectors': [model.n_support_[i] for i in range(len(class_labels))]
@@ -618,8 +618,8 @@ with tab3:
         fig, ax = plt.subplots(figsize=(8, 5))
         colors_sv = RED_TO_GOLD[:len(class_labels)]
         ax.bar(support_info['Class'], support_info['N Support Vectors'], color=colors_sv, alpha=0.6, edgecolor=PRIMARY_COLOR)
-        ax.set_ylabel('Count', fontweight='bold')
-        ax.set_title('Support Vectors per Class - SVM', fontweight='bold', color=PRIMARY_COLOR)
+        ax.set_ylabel('Jumlah', fontweight='bold')
+        ax.set_title('Vektor Pendukung per Kelas - SVM', fontweight='bold', color=PRIMARY_COLOR)
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
@@ -765,30 +765,30 @@ with tab4:
 
 # ====================== TAB 5: PREDICTION APP ======================
 with tab5:
-    st.header("🎯 Prediction App")
+    st.header("🎯 Aplikasi Prediksi")
     
     st.write("Masukkan nilai fitur untuk memprediksi jenis cuaca:")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        temperature = st.slider("Temperature (°C)", -20.0, 50.0, 15.0)
-        humidity = st.slider("Humidity (%)", 0.0, 150.0, 50.0)
-        wind_speed = st.slider("Wind Speed (km/h)", 0.0, 200.0, 10.0)
+        temperature = st.slider("Suhu (°C)", -20.0, 50.0, 15.0)
+        humidity = st.slider("Kelembaban (%)", 0.0, 150.0, 50.0)
+        wind_speed = st.slider("Kecepatan Angin (km/jam)", 0.0, 200.0, 10.0)
     
     with col2:
-        precipitation = st.slider("Precipitation (%)", 0.0, 150.0, 20.0)
-        pressure = st.slider("Atmospheric Pressure (hPa)", 900.0, 1050.0, 1013.0)
-        uv_index = st.slider("UV Index", 0.0, 11.0, 5.0)
+        precipitation = st.slider("Presipitasi (%)", 0.0, 150.0, 20.0)
+        pressure = st.slider("Tekanan Atmosfer (hPa)", 900.0, 1050.0, 1013.0)
+        uv_index = st.slider("Indeks UV", 0.0, 11.0, 5.0)
     
     with col3:
-        visibility = st.slider("Visibility (km)", 1.0, 50.0, 10.0)
+        visibility = st.slider("Jarak Pandang (km)", 1.0, 50.0, 10.0)
         
-        cloud_cover_option = st.selectbox("Cloud Cover", ["Clear", "Overcast", "Partly Cloudy"])
-        season_option = st.selectbox("Season", ["Winter", "Spring", "Summer", "Fall"])
-        location_option = st.selectbox("Location", ["Urban", "Coastal", "Rural"])
+        cloud_cover_option = st.selectbox("Tutupan Awan", ["Clear", "Overcast", "Partly Cloudy"])
+        season_option = st.selectbox("Musim", ["Winter", "Spring", "Summer", "Fall"])
+        location_option = st.selectbox("Lokasi", ["Urban", "Coastal", "Rural"])
     
-    if st.button("🔮 Predict Weather", use_container_width=True):
+    if st.button("🔮 Prediksi Cuaca", use_container_width=True):
         # Use cached encoders and scalers
         le_cloud = data['le_cloud']
         le_season = data['le_season']
@@ -846,7 +846,7 @@ with tab5:
         st.success(f"### {emoji} Prediksi: **{predicted_weather}**")
         
         # Confidence
-        st.subheader("📊 Confidence Score:")
+        st.subheader("📊 Skor Kepercayaan:")
         for i, weather in enumerate(weather_types):
             col1, col2 = st.columns([2, 8])
             with col1:
@@ -857,7 +857,7 @@ with tab5:
 
 # ====================== TAB 6: CONTACT ME ======================
 with tab6:
-    st.header("📧 Contact Me")
+    st.header("📧 Hubungi Saya")
     
     st.markdown("""
     ### Informasi Kontak
@@ -869,11 +869,11 @@ with tab6:
     
     ---
     
-    ### Tentang Project
+    ### Tentang Proyek
     
-    Aplikasi Weather Classification ML ini adalah tugas dari mata kuliah **Machine Learning & Sains Data**.
+    Aplikasi Klasifikasi Cuaca ML ini adalah tugas dari mata kuliah **Machine Learning & Sains Data**.
     
-    **Tujuan Project:**
+    **Tujuan Proyek:**
     - Membandingkan performa 5 algoritma ML untuk klasifikasi cuaca
     - Mengimplementasikan data preprocessing dan feature engineering
     - Melakukan evaluasi model dengan berbagai metrik
@@ -898,3 +898,4 @@ with tab6:
     
     Semoga aplikasi ini bermanfaat untuk pembelajaran Machine Learning!
     """)
+
