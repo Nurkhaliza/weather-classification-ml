@@ -120,33 +120,29 @@ with tab1:
     st.subheader("� Tujuan Analisis")
     
     st.markdown("""
-    Proyek ini bertujuan untuk:
+    Proyek ini bertujuan untuk melakukan analisis mendalam terhadap dataset cuaca menggunakan pendekatan machine learning. 
+    Pertama-tama, kami melakukan Exploratory Data Analysis (EDA) untuk memahami distribusi dan karakteristik data cuaca secara menyeluruh. 
+    Dalam tahap ini, kami menganalisis hubungan antara berbagai fitur dengan jenis cuaca yang diinginkan, serta mengidentifikasi pola-pola 
+    menarik dan outlier yang mungkin ada dalam dataset.
     
-    1. **🔍 Exploratory Data Analysis (EDA)**
-       - Memahami distribusi dan karakteristik data cuaca
-       - Menganalisis hubungan antara fitur dengan jenis cuaca
-       - Mengidentifikasi pola dan outlier dalam dataset
+    Selanjutnya, kami mengembangkan dan membandingkan 5 algoritma machine learning yang berbeda untuk klasifikasi cuaca. 
+    Algoritma-algoritma yang digunakan meliputi Logistic Regression sebagai model linear, Random Forest sebagai ensemble method berbasis bagging, 
+    Gaussian Naive Bayes sebagai pendekatan probabilistik, Support Vector Machine untuk menangani data non-linear, dan Gradient Boosting sebagai 
+    ensemble method berbasis boosting. Dengan membandingkan performa kelima algoritma ini, kami dapat mengidentifikasi model mana yang paling efektif 
+    untuk task klasifikasi cuaca dan memahami trade-off antara kompleksitas model dan akurasi yang dihasilkan.
     
-    2. **🤖 Model Development & Comparison**
-       - Mengembangkan 5 algoritma machine learning yang berbeda:
-         - Logistic Regression (Linear Model)
-         - Random Forest (Ensemble - Bagging)
-         - Gaussian Naive Bayes (Probabilistic)
-         - Support Vector Machine (Non-linear)
-         - Gradient Boosting (Ensemble - Boosting)
-       - Membandingkan performa setiap algoritma
-       - Mengidentifikasi model dengan akurasi terbaik
+    Tahap evaluasi dan visualisasi merupakan bagian krusial dari analisis ini. Kami mengevaluasi performa setiap model menggunakan berbagai metrik 
+    evaluasi seperti Accuracy, Precision, Recall, dan F1-Score untuk memberikan gambaran holistik tentang kualitas prediksi. 
+    Selain itu, kami juga membuat confusion matrix untuk menganalisis pola kesalahan klasifikasi per-class, 
+    ROC curves untuk memahami trade-off antara true positive rate dan false positive rate, serta visualisasi algorithm-specific insights 
+    seperti feature importance untuk Random Forest dan Gradient Boosting, coefficient values untuk Logistic Regression, dan prior probabilities 
+    untuk Gaussian Naive Bayes. Visualisasi-visualisasi ini membantu dalam memahami bagaimana setiap model membuat keputusan klasifikasi.
     
-    3. **📈 Model Evaluation & Visualization**
-       - Mengevaluasi performa model menggunakan metrik: Accuracy, Precision, Recall, F1-Score
-       - Membuat confusion matrix untuk analisis klasifikasi per-class
-       - Menghasilkan ROC curves untuk evaluasi threshold sensitivity
-       - Visualisasi algorithm-specific insights (feature importance, coefficients, dll)
-    
-    4. **🎯 Practical Application**
-       - Membuat interactive prediction app untuk klasifikasi cuaca real-time
-       - Memberikan explanations tentang cara kerja setiap algoritma
-       - Menyediakan insights untuk decision-making
+    Terakhir, kami membangun aplikasi prediction yang interaktif dan praktis untuk mengklasifikasikan jenis cuaca secara real-time. 
+    Aplikasi ini memungkinkan pengguna untuk memasukkan nilai-nilai fitur cuaca dan mendapatkan prediksi jenis cuaca beserta confidence score-nya. 
+    Selain itu, kami juga menyediakan penjelasan mendalam tentang cara kerja masing-masing algoritma sehingga pengguna dapat memahami dasar-dasar 
+    dari setiap pendekatan machine learning yang digunakan. Dengan kombinasi dari tools visualization, explanation, dan aplikasi interaktif, 
+    proyek ini memberikan insights yang berguna untuk decision-making dan pembelajaran machine learning.
     """)
     
     st.markdown("---")
