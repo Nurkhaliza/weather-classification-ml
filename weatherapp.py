@@ -117,7 +117,41 @@ with tab1:
     
     st.markdown("---")
     
-    st.subheader("📋 Deskripsi Fitur")
+    st.subheader("� Tujuan Analisis")
+    
+    st.markdown("""
+    Proyek ini bertujuan untuk:
+    
+    1. **🔍 Exploratory Data Analysis (EDA)**
+       - Memahami distribusi dan karakteristik data cuaca
+       - Menganalisis hubungan antara fitur dengan jenis cuaca
+       - Mengidentifikasi pola dan outlier dalam dataset
+    
+    2. **🤖 Model Development & Comparison**
+       - Mengembangkan 5 algoritma machine learning yang berbeda:
+         - Logistic Regression (Linear Model)
+         - Random Forest (Ensemble - Bagging)
+         - Gaussian Naive Bayes (Probabilistic)
+         - Support Vector Machine (Non-linear)
+         - Gradient Boosting (Ensemble - Boosting)
+       - Membandingkan performa setiap algoritma
+       - Mengidentifikasi model dengan akurasi terbaik
+    
+    3. **📈 Model Evaluation & Visualization**
+       - Mengevaluasi performa model menggunakan metrik: Accuracy, Precision, Recall, F1-Score
+       - Membuat confusion matrix untuk analisis klasifikasi per-class
+       - Menghasilkan ROC curves untuk evaluasi threshold sensitivity
+       - Visualisasi algorithm-specific insights (feature importance, coefficients, dll)
+    
+    4. **🎯 Practical Application**
+       - Membuat interactive prediction app untuk klasifikasi cuaca real-time
+       - Memberikan explanations tentang cara kerja setiap algoritma
+       - Menyediakan insights untuk decision-making
+    """)
+    
+    st.markdown("---")
+    
+    st.subheader("�📋 Deskripsi Fitur")
     
     features_desc = {
         "Temperature": "Suhu dalam °C (dari sangat dingin hingga sangat panas)",
