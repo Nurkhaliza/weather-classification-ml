@@ -678,7 +678,7 @@ with tab3:
     st.markdown("---")
     
     # ===== 9. Interpretasi Feature Importance =====
-    st.subheader("9️⃣ Interpretasi Feature Importance")
+    st.subheader("9️⃣ Analisis & Interpretasi Feature Importance")
     
     if model_option in ["Random Forest", "Gradient Boosting"]:
         importance_df_sorted = pd.DataFrame({
@@ -686,28 +686,164 @@ with tab3:
             'Kepentingan': model.feature_importances_
         }).sort_values('Kepentingan', ascending=False)
         
-        st.write("**Penjelasan Kepentingan Fitur:**")
+        st.write("**📌 Penjelasan Feature Importance:**")
         st.write("""
         **Feature Importance** menunjukkan seberapa besar kontribusi setiap fitur dalam membuat prediksi model.
-        
-        **Cara Kerja:**
-        - Fitur dengan nilai kepentingan tinggi memiliki kontribusi besar dalam menentukan jenis cuaca
-        - Fitur dengan nilai kepentingan rendah memiliki kontribusi kecil dan bisa dihilangkan tanpa banyak mempengaruhi performa
-        - Jumlah semua kepentingan = 1.0 (100%)
+        Semakin tinggi nilai kepentingan, semakin penting fitur tersebut untuk klasifikasi jenis cuaca.
         """)
         
-        top_features = importance_df_sorted.head(5)
-        st.write("**5 Fitur Paling Penting:**")
-        for idx, row in top_features.iterrows():
+        st.markdown("---")
+        
+        st.write("**📊 Analisis Mendalam Berdasarkan Data:**")
+        
+        # Top 5 features analysis
+        top_5 = importance_df_sorted.head(5)
+        
+        st.write(f"**Top 5 Fitur Paling Penting ({model_option}):**")
+        for rank, (idx, row) in enumerate(top_5.iterrows(), 1):
             percentage = row['Kepentingan'] * 100
-            st.write(f"✅ **{row['Fitur']}**: {percentage:.2f}%")
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                st.metric(f"🔝 Rank {rank}", f"{percentage:.2f}%")
+            with col2:
+                st.write(f"**{row['Fitur']}**")
         
-        st.info("""
-        **Implikasi untuk Model:**
-        - Model mengandalkan fitur-fitur utama untuk membuat prediksi yang akurat
-        - Fitur-fitur ini memiliki hubungan kuat dengan jenis cuaca
-        - Pengumpulan data untuk fitur-fitur ini harus sangat akurat
-        """)
+        st.markdown("---")
+        
+        # Analisis per fitur top
+        st.write("**🔍 Analisis Detail Fitur Teratas:**")
+        
+        # Analisis top fitur 1
+        top_feature_1 = importance_df_sorted.iloc[0]['Fitur']
+        top_feature_1_importance = importance_df_sorted.iloc[0]['Kepentingan'] * 100
+        
+        st.write(f"**1. {top_feature_1} ({top_feature_1_importance:.2f}%)**")
+        
+        # Analisis distribusi fitur 1 per weather type
+        fig, ax = plt.subplots(figsize=(10, 5))
+        for weather in df["Weather Type"].unique():
+            data = df[df["Weather Type"] == weather][top_feature_1]
+            ax.hist(data, alpha=0.6, label=weather, bins=15)
+        ax.set_xlabel(top_feature_1, fontweight='bold')
+        ax.set_ylabel('Frekuensi', fontweight='bold')
+        ax.set_title(f'Distribusi {top_feature_1} per Jenis Cuaca', fontweight='bold', color=PRIMARY_COLOR)
+        ax.legend()
+        ax.grid(alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+        
+        # Statistik per weather type
+        stats_data = []
+        for weather in df["Weather Type"].unique():
+            data = df[df["Weather Type"] == weather][top_feature_1]
+            stats_data.append({
+                'Cuaca': weather,
+                'Mean': f"{data.mean():.2f}",
+                'Std Dev': f"{data.std():.2f}",
+                'Min': f"{data.min():.2f}",
+                'Max': f"{data.max():.2f}"
+            })
+        
+        st.write("**Statistik per Jenis Cuaca:**")
+        st.dataframe(pd.DataFrame(stats_data), use_container_width=True)
+        
+        insight_1 = f"""
+        **Insight:** Fitur {top_feature_1} adalah yang paling penting ({top_feature_1_importance:.2f}%) karena memiliki 
+        variasi yang signifikan antar jenis cuaca. Model menggunakan fitur ini sebagai pembeda utama untuk 
+        mengklasifikasikan jenis cuaca. Nilai {top_feature_1} yang berbeda antar cuaca membantu model membuat keputusan 
+        klasifikasi yang akurat.
+        """
+        st.success(insight_1)
+        
+        st.markdown("---")
+        
+        # Analisis top fitur 2
+        if len(importance_df_sorted) > 1:
+            top_feature_2 = importance_df_sorted.iloc[1]['Fitur']
+            top_feature_2_importance = importance_df_sorted.iloc[1]['Kepentingan'] * 100
+            
+            st.write(f"**2. {top_feature_2} ({top_feature_2_importance:.2f}%)**")
+            
+            fig, ax = plt.subplots(figsize=(10, 5))
+            for weather in df["Weather Type"].unique():
+                data = df[df["Weather Type"] == weather][top_feature_2]
+                ax.hist(data, alpha=0.6, label=weather, bins=15)
+            ax.set_xlabel(top_feature_2, fontweight='bold')
+            ax.set_ylabel('Frekuensi', fontweight='bold')
+            ax.set_title(f'Distribusi {top_feature_2} per Jenis Cuaca', fontweight='bold', color=PRIMARY_COLOR)
+            ax.legend()
+            ax.grid(alpha=0.3)
+            fig.tight_layout()
+            fig.patch.set_facecolor('white')
+            st.pyplot(fig)
+            
+            stats_data_2 = []
+            for weather in df["Weather Type"].unique():
+                data = df[df["Weather Type"] == weather][top_feature_2]
+                stats_data_2.append({
+                    'Cuaca': weather,
+                    'Mean': f"{data.mean():.2f}",
+                    'Std Dev': f"{data.std():.2f}",
+                    'Min': f"{data.min():.2f}",
+                    'Max': f"{data.max():.2f}"
+                })
+            
+            st.write("**Statistik per Jenis Cuaca:**")
+            st.dataframe(pd.DataFrame(stats_data_2), use_container_width=True)
+            
+            insight_2 = f"""
+            **Insight:** Fitur {top_feature_2} ({top_feature_2_importance:.2f}%) juga memainkan peran penting sebagai 
+            fitur pendukung dalam klasifikasi. Kombinasi antara {top_feature_1} dan {top_feature_2} memberikan sinyal 
+            yang kuat untuk model dalam membedakan berbagai jenis cuaca.
+            """
+            st.success(insight_2)
+        
+        st.markdown("---")
+        
+        # Analisis fitur dengan importance rendah
+        st.write("**📉 Fitur Dengan Kepentingan Rendah:**")
+        
+        low_importance = importance_df_sorted.tail(3)
+        
+        low_features_text = ""
+        for idx, row in low_importance.iterrows():
+            percentage = row['Kepentingan'] * 100
+            low_features_text += f"- **{row['Fitur']}**: {percentage:.2f}%\n"
+        
+        st.write(low_features_text)
+        
+        low_insight = """
+        **Insight:** Fitur-fitur dengan kepentingan rendah ini memiliki kontribusi minimal terhadap klasifikasi.
+        Hal ini bisa terjadi karena:
+        1. Fitur tersebut tidak memiliki variasi signifikan antar jenis cuaca
+        2. Fitur sudah tercakup oleh informasi fitur-fitur penting lainnya
+        3. Korelasi fitur dengan target variable rendah
+        """
+        st.info(low_insight)
+        
+        st.markdown("---")
+        
+        # Summary analysis
+        st.write("**🎯 Kesimpulan Analisis:**")
+        
+        summary = f"""
+        1. **Fitur Dominan**: Model {model_option} sangat mengandalkan {importance_df_sorted.iloc[0]['Fitur']} 
+           dan {importance_df_sorted.iloc[1]['Fitur']} untuk klasifikasi.
+        
+        2. **Hubungan dengan Target**: Kedua fitur ini menunjukkan pola distribusi yang jelas antar jenis cuaca,
+           membuatnya ideal untuk prediksi.
+        
+        3. **Implikasi Praktis**:
+           - Pastikan akurasi pengumpulan data untuk fitur-fitur penting
+           - Fitur dengan kepentingan rendah bisa dikurangi untuk efisiensi (feature reduction)
+           - Model ini dapat diandalkan karena keputusannya berdasarkan fitur yang secara logis relevan dengan cuaca
+        
+        4. **Validasi Logis**: Fitur-fitur dengan kepentingan tinggi adalah yang secara intuitif paling mempengaruhi
+           jenis cuaca (suhu, kelembaban, dll), sehingga hasil analisis model sesuai dengan pengetahuan domain.
+        """
+        
+        st.success(summary)
         
     elif model_option == "Logistic Regression":
         coef_df_sorted = pd.DataFrame({
@@ -715,25 +851,83 @@ with tab3:
             'Koefisien': model.coef_[0]
         }).sort_values('Koefisien', key=abs, ascending=False)
         
-        st.write("**Penjelasan Koefisien Logistic Regression:**")
+        st.write("**📌 Penjelasan Koefisien Logistic Regression:**")
         st.write("""
-        **Koefisien** dalam Logistic Regression menunjukkan arah dan kekuatan pengaruh fitur terhadap probabilitas kelas.
-        
-        **Interpretasi:**
-        - **Koefisien Positif**: Peningkatan nilai fitur meningkatkan probabilitas prediksi kelas positif
-        - **Koefisien Negatif**: Peningkatan nilai fitur menurunkan probabilitas prediksi kelas positif
-        - **Koefisien ~0**: Fitur memiliki pengaruh minimal terhadap prediksi
-        - **Koefisien Besar**: Pengaruh fitur sangat kuat terhadap prediksi
+        **Koefisien** menunjukkan arah dan kekuatan pengaruh fitur terhadap probabilitas prediksi kelas.
+        - **Koefisien Positif**: Peningkatan fitur meningkatkan probabilitas kelas prediksi
+        - **Koefisien Negatif**: Peningkatan fitur menurunkan probabilitas kelas prediksi
+        - **Magnitude**: Semakin besar |koefisien|, semakin kuat pengaruh fitur
         """)
         
-        top_features = coef_df_sorted.head(5)
-        st.write("**5 Fitur Paling Berpengaruh:**")
-        for idx, row in top_features.iterrows():
+        st.markdown("---")
+        
+        st.write("**📊 Analisis Mendalam Koefisien:**")
+        
+        top_5_coef = coef_df_sorted.head(5)
+        
+        st.write("**Top 5 Fitur Paling Berpengaruh:**")
+        for rank, (idx, row) in enumerate(top_5_coef.iterrows(), 1):
             direction = "📈 Positif" if row['Koefisien'] > 0 else "📉 Negatif"
-            st.write(f"{direction} **{row['Fitur']}**: {row['Koefisien']:.4f}")
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                st.metric(f"#{rank}", f"{row['Koefisien']:.4f}")
+            with col2:
+                st.write(f"{direction} **{row['Fitur']}**")
+        
+        st.markdown("---")
+        
+        st.write("**🔍 Analisis Pengaruh Fitur:**")
+        
+        # Analisis fitur dengan koefisien terbesar positif
+        positive_coefs = coef_df_sorted[coef_df_sorted['Koefisien'] > 0].head(3)
+        negative_coefs = coef_df_sorted[coef_df_sorted['Koefisien'] < 0].head(3)
+        
+        st.write("**Fitur dengan Pengaruh Positif TERKUAT:**")
+        
+        if len(positive_coefs) > 0:
+            for idx, row in positive_coefs.iterrows():
+                st.write(f"✅ **{row['Fitur']}** (Koef: {row['Koefisien']:.4f})")
+                st.write(f"   → Semakin tinggi {row['Fitur']}, semakin meningkat probabilitas prediksi terhadap kelas target")
+                
+                # Analisis korelasi dengan target
+                corr_with_target = df_corr[row['Fitur']].corr(df_corr['Weather Type'])
+                st.write(f"   → Korelasi dengan Weather Type: {corr_with_target:.3f}")
+        
+        st.write("**Fitur dengan Pengaruh Negatif TERKUAT:**")
+        
+        if len(negative_coefs) > 0:
+            for idx, row in negative_coefs.iterrows():
+                st.write(f"❌ **{row['Fitur']}** (Koef: {row['Koefisien']:.4f})")
+                st.write(f"   → Semakin tinggi {row['Fitur']}, semakin menurun probabilitas prediksi terhadap kelas target")
+                
+                corr_with_target = df_corr[row['Fitur']].corr(df_corr['Weather Type'])
+                st.write(f"   → Korelasi dengan Weather Type: {corr_with_target:.3f}")
+        
+        st.markdown("---")
+        
+        # Summary for logistic regression
+        st.write("**🎯 Kesimpulan Analisis Logistic Regression:**")
+        
+        summary_lr = f"""
+        1. **Model Linear**: Logistic Regression mengasumsikan hubungan linear antara fitur dan target.
+           Koefisien menunjukkan hubungan ini secara eksplisit.
+        
+        2. **Fitur Paling Berpengaruh**: 
+           - {top_5_coef.iloc[0]['Fitur']} memiliki pengaruh terkuat dengan koef {top_5_coef.iloc[0]['Koefisien']:.4f}
+           - Perubahan pada fitur ini paling signifikan mempengaruhi prediksi
+        
+        3. **Interpretabilitas**: Koefisien positif dan negatif memberi informasi arah hubungan:
+           - Positif: Peningkatan fitur → peningkatan probabilitas kelas
+           - Negatif: Peningkatan fitur → penurunan probabilitas kelas
+        
+        4. **Keandalan Model**: Fitur-fitur dengan koefisien besar menunjukkan hubungan kuat dengan
+           target variable, mengindikasikan model memiliki dasar logis untuk prediksi.
+        """
+        
+        st.success(summary_lr)
     
     else:
-        st.write("**Interpretasi untuk model ini akan ditampilkan di visualisasi sebelumnya.**")
+        st.write("**Model ini memiliki analisis khusus - detail ditampilkan di visualisasi sebelumnya.**")
     
     st.markdown("---")
     
