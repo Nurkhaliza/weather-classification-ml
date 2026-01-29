@@ -38,7 +38,56 @@ def load_data():
     df = pd.read_csv("weather_classification_data.csv")
     return df
 
-df = load_data()
+# Preprocessing function (cached globally)
+@st.cache_data
+def preprocess_data():
+    df = load_data()
+    
+    # Create encoders
+    le_cloud = LabelEncoder()
+    le_season = LabelEncoder()
+    le_location = LabelEncoder()
+    le_target = LabelEncoder()
+    
+    # Fit encoders on original data
+    df_processed = df.copy()
+    df_processed["Cloud Cover"] = le_cloud.fit_transform(df_processed["Cloud Cover"])
+    df_processed["Season"] = le_season.fit_transform(df_processed["Season"])
+    df_processed["Location"] = le_location.fit_transform(df_processed["Location"])
+    
+    # Scale features
+    scaler = StandardScaler()
+    numerical_cols = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
+                      "Atmospheric Pressure", "UV Index", "Visibility (km)"]
+    df_processed[numerical_cols] = scaler.fit_transform(df_processed[numerical_cols])
+    
+    # Encode target
+    y_encoded = le_target.fit_transform(df_processed["Weather Type"])
+    X = df_processed.drop("Weather Type", axis=1)
+    y = y_encoded
+    
+    # Split data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    return {
+        'df': df,
+        'df_processed': df_processed,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'le_cloud': le_cloud,
+        'le_season': le_season,
+        'le_location': le_location,
+        'le_target': le_target,
+        'scaler': scaler,
+        'numerical_cols': numerical_cols,
+        'X_columns': X.columns
+    }
+
+# Load preprocessed data
+data = preprocess_data()
+df = data['df']
 
 # ====================== TAB NAVIGATION ======================
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
@@ -541,32 +590,24 @@ with tab5:
         location_option = st.selectbox("Location", ["Urban", "Coastal", "Rural"])
     
     if st.button("🔮 Predict Weather", use_container_width=True):
-        # Data Preprocessing
-        le = LabelEncoder()
-        df_processed = df.copy()
-        df_processed["Cloud Cover"] = le.fit_transform(df_processed["Cloud Cover"])
-        df_processed["Season"] = le.fit_transform(df_processed["Season"])
-        df_processed["Location"] = le.fit_transform(df_processed["Location"])
-        
-        scaler = StandardScaler()
-        numerical_cols = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
-                          "Atmospheric Pressure", "UV Index", "Visibility (km)"]
-        df_processed[numerical_cols] = scaler.fit_transform(df_processed[numerical_cols])
-        
-        le_target = LabelEncoder()
-        y_encoded = le_target.fit_transform(df_processed["Weather Type"])
-        X = df_processed.drop("Weather Type", axis=1)
-        y = y_encoded
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # Use cached encoders and scalers
+        le_cloud = data['le_cloud']
+        le_season = data['le_season']
+        le_location = data['le_location']
+        le_target = data['le_target']
+        scaler = data['scaler']
+        numerical_cols = data['numerical_cols']
+        X_train = data['X_train']
+        y_train = data['y_train']
         
         # Train best model (berdasarkan accuracy)
         model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
         model.fit(X_train, y_train)
         
-        # Prepare input
-        cloud_cover_encoded = le.transform([cloud_cover_option])[0]
-        season_encoded = le.transform([season_option])[0]
-        location_encoded = le.transform([location_option])[0]
+        # Prepare input using cached encoders
+        cloud_cover_encoded = le_cloud.transform([cloud_cover_option])[0]
+        season_encoded = le_season.transform([season_option])[0]
+        location_encoded = le_location.transform([location_option])[0]
         
         input_data = pd.DataFrame({
             'Temperature': [temperature],
