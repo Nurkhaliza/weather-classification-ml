@@ -328,11 +328,132 @@ with tab2:
 
 # ====================== TAB 3: MACHINE LEARNING ======================
 with tab3:
-    st.header("🤖 Machine Learning - Model Training & Evaluation")
+    st.header("🤖 Machine Learning - Pelatihan & Evaluasi Model")
+    
+    # ===== 1. Dataset yang Digunakan =====
+    st.subheader("1️⃣ Dataset yang Digunakan")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("📊 Total Sampel", len(df))
+    with col2:
+        st.metric("📋 Jumlah Fitur", len(df.columns))
+    with col3:
+        st.metric("🎯 Kelas Target", len(df["Weather Type"].unique()))
+    
+    st.write("**Preview Data (10 Baris Pertama):**")
+    st.dataframe(df.head(10), use_container_width=True)
+    
+    st.write("**Statistik Deskriptif Dataset:**")
+    st.dataframe(df.describe(), use_container_width=True)
+    
+    st.markdown("---")
+    
+    # ===== 2. Visualisasi Boxplot Distribusi =====
+    st.subheader("2️⃣ Visualisasi Boxplot Distribusi Data")
+    
+    numerical_cols = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
+                      "Atmospheric Pressure", "UV Index", "Visibility (km)"]
+    
+    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    axes = axes.flatten()
+    
+    for idx, col in enumerate(numerical_cols):
+        axes[idx].boxplot([df[df["Weather Type"] == wtype][col].values for wtype in df["Weather Type"].unique()],
+                          labels=df["Weather Type"].unique())
+        axes[idx].set_title(f"Distribusi {col}", fontweight='bold', color=PRIMARY_COLOR)
+        axes[idx].set_ylabel("Nilai", fontweight='bold')
+        axes[idx].grid(axis='y', alpha=0.3)
+        axes[idx].tick_params(axis='x', rotation=45)
+    
+    axes[-1].axis('off')
+    fig.tight_layout()
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    # ===== 3. Normalisasi Data dengan Min-Max Scaling =====
+    st.subheader("3️⃣ Normalisasi Data dengan Min-Max Scaling")
+    
+    from sklearn.preprocessing import MinMaxScaler
+    
+    minmax_scaler = MinMaxScaler()
+    df_minmax = df.copy()
+    df_minmax[numerical_cols] = minmax_scaler.fit_transform(df[numerical_cols])
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Sebelum Min-Max Scaling (Original)**")
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.boxplot([df[col].values for col in numerical_cols], labels=numerical_cols)
+        ax.set_ylabel("Nilai", fontweight='bold')
+        ax.set_title("Data Original (Range Berbeda)", fontweight='bold', color=PRIMARY_COLOR)
+        ax.tick_params(axis='x', rotation=45)
+        ax.grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    with col2:
+        st.write("**Setelah Min-Max Scaling**")
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.boxplot([df_minmax[col].values for col in numerical_cols], labels=numerical_cols)
+        ax.set_ylabel("Nilai (0-1)", fontweight='bold')
+        ax.set_title("Data Min-Max Scaled (Range 0-1)", fontweight='bold', color=PRIMARY_COLOR)
+        ax.tick_params(axis='x', rotation=45)
+        ax.grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    st.info("""
+    **Min-Max Scaling:** Mengubah data ke range [0, 1] dengan rumus: (X - min) / (max - min)
+    - Semua fitur memiliki skala yang sama
+    - Mempertahankan distribusi data asli
+    - Cocok untuk: Neural Networks, KNN, K-Means
+    """)
+    
+    st.markdown("---")
+    
+    # ===== 4. Analisis Korelasi Antar Variabel =====
+    st.subheader("4️⃣ Analisis Korelasi Antar Variabel")
+    
+    # Prepare data for correlation (encode categorical variables temporarily)
+    df_corr = df.copy()
+    le_temp = LabelEncoder()
+    df_corr["Cloud Cover"] = le_temp.fit_transform(df_corr["Cloud Cover"])
+    le_temp2 = LabelEncoder()
+    df_corr["Season"] = le_temp2.fit_transform(df_corr["Season"])
+    le_temp3 = LabelEncoder()
+    df_corr["Location"] = le_temp3.fit_transform(df_corr["Location"])
+    le_temp4 = LabelEncoder()
+    df_corr["Weather Type"] = le_temp4.fit_transform(df_corr["Weather Type"])
+    
+    correlation_matrix = df_corr.corr()
+    
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(correlation_matrix, annot=True, fmt='.2f', cmap='coolwarm', center=0,
+                square=True, ax=ax, cbar_kws={'label': 'Korelasi'}, linewidths=0.5)
+    ax.set_title("Matriks Korelasi Antar Variabel", fontweight='bold', color=PRIMARY_COLOR, fontsize=14)
+    fig.tight_layout()
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    st.info("""
+    **Interpretasi Korelasi:**
+    - **Korelasi Positif (mendekati 1):** Dua variabel bergerak searah
+    - **Korelasi Negatif (mendekati -1):** Dua variabel bergerak berlawanan arah
+    - **Korelasi ~0:** Tidak ada hubungan linear antara variabel
+    """)
+    
+    st.markdown("---")
+    
+    # ===== 5. Pembagian Data =====
+    st.subheader("5️⃣ Pembagian Data (Train-Test Split)")
     
     # Data Preprocessing
-    st.subheader("⚙️ Data Preprocessing")
-    
     le = LabelEncoder()
     df_processed = df.copy()
     df_processed["Cloud Cover"] = le.fit_transform(df_processed["Cloud Cover"])
@@ -340,8 +461,6 @@ with tab3:
     df_processed["Location"] = le.fit_transform(df_processed["Location"])
     
     scaler = StandardScaler()
-    numerical_cols = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
-                      "Atmospheric Pressure", "UV Index", "Visibility (km)"]
     df_processed[numerical_cols] = scaler.fit_transform(df_processed[numerical_cols])
     
     le_target = LabelEncoder()
@@ -350,9 +469,273 @@ with tab3:
     y = y_encoded
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    st.success(f"✅ Data preprocessing selesai!")
-    st.write(f"- Data latihan: {len(X_train)} sampel")
-    st.write(f"- Data pengujian: {len(X_test)} sampel")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("📊 Total Data", len(df))
+    with col2:
+        st.metric("🎓 Data Latihan (80%)", len(X_train))
+    with col3:
+        st.metric("🧪 Data Pengujian (20%)", len(X_test))
+    
+    # Visualisasi pembagian data
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sizes = [len(X_train), len(X_test)]
+    labels = [f'Data Latihan\n({len(X_train)} sampel)', f'Data Pengujian\n({len(X_test)} sampel)']
+    colors = [PRIMARY_COLOR, SECONDARY_COLOR]
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=90, textprops={'fontsize': 12, 'weight': 'bold'})
+    ax.set_title("Pembagian Data Train-Test", fontweight='bold', color=PRIMARY_COLOR, fontsize=14)
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    # ===== 6. Pemilihan Model Klasifikasi =====
+    st.subheader("6️⃣ Pemilihan Model Klasifikasi")
+    
+    model_option = st.selectbox(
+        "Pilih satu model untuk analisis detail:",
+        ("Logistic Regression", "Random Forest", "Gaussian Naive Bayes", "SVM", "Gradient Boosting")
+    )
+    
+    # Model Descriptions
+    model_descriptions = {
+        "Logistic Regression": "🔵 Algoritma linear yang menggunakan fungsi sigmoid untuk memprediksi probabilitas kelas.",
+        "Random Forest": "🌳 Ensemble learning yang menggabungkan banyak decision trees untuk prediksi yang lebih robust.",
+        "Gaussian Naive Bayes": "🎲 Probabilistic classifier berbasis Bayes dengan asumsi fitur independen.",
+        "SVM": "📍 Mencari hyperplane optimal untuk memaksimalkan margin antar kelas.",
+        "Gradient Boosting": "📈 Sequential ensemble yang membangun trees untuk meminimalkan error secara bertahap."
+    }
+    
+    st.info(model_descriptions[model_option])
+    
+    # Model Initialization
+    if model_option == "Logistic Regression":
+        model = LogisticRegression(max_iter=1000)
+    elif model_option == "Random Forest":
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+    elif model_option == "Gaussian Naive Bayes":
+        model = GaussianNB()
+    elif model_option == "SVM":
+        model = SVC(probability=True, random_state=42)
+    elif model_option == "Gradient Boosting":
+        model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
+    
+    # Train Model
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    
+    st.markdown("---")
+    
+    # ===== 7. Evaluasi Model dan Perbandingan Peforma Semua Model =====
+    st.subheader("7️⃣ Evaluasi Model & Perbandingan Peforma Semua Model")
+    
+    # Current model metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision_avg = precision_score(y_test, y_pred, average='weighted')
+    recall_avg = recall_score(y_test, y_pred, average='weighted')
+    f1_avg = f1_score(y_test, y_pred, average='weighted')
+    
+    st.write(f"**Metrik Model Terpilih: {model_option}**")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("🎯 Akurasi", f"{accuracy:.4f}")
+    with col2:
+        st.metric("📊 Presisi", f"{precision_avg:.4f}")
+    with col3:
+        st.metric("🔍 Recall", f"{recall_avg:.4f}")
+    with col4:
+        st.metric("⚡ F1-Score", f"{f1_avg:.4f}")
+    
+    st.markdown("---")
+    
+    # Train all models for comparison
+    st.write("**Perbandingan Peforma Semua Model:**")
+    
+    models_dict = {
+        "Logistic Regression": LogisticRegression(max_iter=1000),
+        "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
+        "Gaussian Naive Bayes": GaussianNB(),
+        "SVM": SVC(probability=True, random_state=42),
+        "Gradient Boosting": GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
+    }
+    
+    results_list = []
+    for model_name, model_obj in models_dict.items():
+        model_obj.fit(X_train, y_train)
+        y_pred_temp = model_obj.predict(X_test)
+        
+        acc = accuracy_score(y_test, y_pred_temp)
+        prec = precision_score(y_test, y_pred_temp, average='weighted')
+        rec = recall_score(y_test, y_pred_temp, average='weighted')
+        f1 = f1_score(y_test, y_pred_temp, average='weighted')
+        
+        results_list.append({
+            "Model": model_name,
+            "Akurasi": f"{acc:.4f}",
+            "Presisi": f"{prec:.4f}",
+            "Recall": f"{rec:.4f}",
+            "F1-Score": f"{f1:.4f}"
+        })
+    
+    results_df = pd.DataFrame(results_list)
+    st.dataframe(results_df, use_container_width=True)
+    
+    # Visualisasi perbandingan
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Convert for plotting
+    results_plot = results_df.copy()
+    for col in ["Akurasi", "Presisi", "Recall", "F1-Score"]:
+        results_plot[col] = results_plot[col].astype(float)
+    
+    x = np.arange(len(results_plot))
+    width = 0.2
+    
+    ax.bar(x - 1.5*width, results_plot["Akurasi"], width, label="Akurasi", color=RED_TO_GOLD[0], alpha=0.8)
+    ax.bar(x - 0.5*width, results_plot["Presisi"], width, label="Presisi", color=RED_TO_GOLD[1], alpha=0.8)
+    ax.bar(x + 0.5*width, results_plot["Recall"], width, label="Recall", color=RED_TO_GOLD[2], alpha=0.8)
+    ax.bar(x + 1.5*width, results_plot["F1-Score"], width, label="F1-Score", color=RED_TO_GOLD[3], alpha=0.8)
+    
+    ax.set_ylabel("Skor", fontweight='bold')
+    ax.set_title("Perbandingan Metrik Semua Model", fontweight='bold', color=PRIMARY_COLOR, fontsize=14)
+    ax.set_xticks(x)
+    ax.set_xticklabels(results_plot["Model"], rotation=45, ha='right')
+    ax.legend()
+    ax.set_ylim([0, 1])
+    ax.grid(axis='y', alpha=0.3)
+    
+    fig.tight_layout()
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    # Confusion Matrix
+    st.write(f"**Matriks Kebingungan - {model_option}:**")
+    class_labels = le_target.classes_
+    cm = confusion_matrix(y_test, y_pred)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='RdYlGn', xticklabels=class_labels,
+                yticklabels=class_labels, ax=ax, cbar_kws={'label': 'Jumlah'})
+    ax.set_ylabel('Label Sebenarnya', fontweight='bold')
+    ax.set_xlabel('Label Prediksi', fontweight='bold')
+    ax.set_title(f'Matriks Kebingungan - {model_option}', fontweight='bold', color=PRIMARY_COLOR)
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    # ===== 8. Feature Importance =====
+    st.subheader("8️⃣ Feature Importance (Kepentingan Fitur)")
+    
+    if model_option in ["Random Forest", "Gradient Boosting"]:
+        feature_importance_values = model.feature_importances_
+        feature_names = X_train.columns
+        
+        importance_df = pd.DataFrame({
+            'Fitur': feature_names,
+            'Kepentingan': feature_importance_values
+        }).sort_values('Kepentingan', ascending=False)
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+        colors = RED_TO_GOLD[:len(importance_df)]
+        ax.barh(importance_df['Fitur'], importance_df['Kepentingan'], color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+        ax.set_xlabel('Kepentingan (Importance Score)', fontweight='bold')
+        ax.set_title(f'Feature Importance - {model_option}', fontweight='bold', color=PRIMARY_COLOR, fontsize=12)
+        ax.invert_yaxis()
+        ax.grid(axis='x', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+        
+        st.dataframe(importance_df, use_container_width=True)
+        
+    elif model_option == "Logistic Regression":
+        coef_values = model.coef_[0]
+        feature_names = X_train.columns
+        
+        coef_df = pd.DataFrame({
+            'Fitur': feature_names,
+            'Koefisien': coef_values
+        }).sort_values('Koefisien', key=abs, ascending=False)
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+        colors = [SECONDARY_COLOR if x > 0 else ACCENT_COLOR for x in coef_df['Koefisien']]
+        ax.barh(coef_df['Fitur'], coef_df['Koefisien'], color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+        ax.set_xlabel('Koefisien (Positive=Meningkatkan, Negative=Menurunkan)', fontweight='bold')
+        ax.set_title('Feature Coefficients - Logistic Regression', fontweight='bold', color=PRIMARY_COLOR, fontsize=12)
+        ax.invert_yaxis()
+        ax.grid(axis='x', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+        
+        st.dataframe(coef_df, use_container_width=True)
+        
+    else:
+        st.warning("⚠️ Model ini tidak memiliki feature importance yang dapat divisualisasikan langsung.")
+    
+    st.markdown("---")
+    
+    # ===== 9. Interpretasi Feature Importance =====
+    st.subheader("9️⃣ Interpretasi Feature Importance")
+    
+    if model_option in ["Random Forest", "Gradient Boosting"]:
+        importance_df_sorted = pd.DataFrame({
+            'Fitur': X_train.columns,
+            'Kepentingan': model.feature_importances_
+        }).sort_values('Kepentingan', ascending=False)
+        
+        st.write("**Penjelasan Kepentingan Fitur:**")
+        st.write("""
+        **Feature Importance** menunjukkan seberapa besar kontribusi setiap fitur dalam membuat prediksi model.
+        
+        **Cara Kerja:**
+        - Fitur dengan nilai kepentingan tinggi memiliki kontribusi besar dalam menentukan jenis cuaca
+        - Fitur dengan nilai kepentingan rendah memiliki kontribusi kecil dan bisa dihilangkan tanpa banyak mempengaruhi performa
+        - Jumlah semua kepentingan = 1.0 (100%)
+        """)
+        
+        top_features = importance_df_sorted.head(5)
+        st.write("**5 Fitur Paling Penting:**")
+        for idx, row in top_features.iterrows():
+            percentage = row['Kepentingan'] * 100
+            st.write(f"✅ **{row['Fitur']}**: {percentage:.2f}%")
+        
+        st.info("""
+        **Implikasi untuk Model:**
+        - Model mengandalkan fitur-fitur utama untuk membuat prediksi yang akurat
+        - Fitur-fitur ini memiliki hubungan kuat dengan jenis cuaca
+        - Pengumpulan data untuk fitur-fitur ini harus sangat akurat
+        """)
+        
+    elif model_option == "Logistic Regression":
+        coef_df_sorted = pd.DataFrame({
+            'Fitur': X_train.columns,
+            'Koefisien': model.coef_[0]
+        }).sort_values('Koefisien', key=abs, ascending=False)
+        
+        st.write("**Penjelasan Koefisien Logistic Regression:**")
+        st.write("""
+        **Koefisien** dalam Logistic Regression menunjukkan arah dan kekuatan pengaruh fitur terhadap probabilitas kelas.
+        
+        **Interpretasi:**
+        - **Koefisien Positif**: Peningkatan nilai fitur meningkatkan probabilitas prediksi kelas positif
+        - **Koefisien Negatif**: Peningkatan nilai fitur menurunkan probabilitas prediksi kelas positif
+        - **Koefisien ~0**: Fitur memiliki pengaruh minimal terhadap prediksi
+        - **Koefisien Besar**: Pengaruh fitur sangat kuat terhadap prediksi
+        """)
+        
+        top_features = coef_df_sorted.head(5)
+        st.write("**5 Fitur Paling Berpengaruh:**")
+        for idx, row in top_features.iterrows():
+            direction = "📈 Positif" if row['Koefisien'] > 0 else "📉 Negatif"
+            st.write(f"{direction} **{row['Fitur']}**: {row['Koefisien']:.4f}")
+    
+    else:
+        st.write("**Interpretasi untuk model ini akan ditampilkan di visualisasi sebelumnya.**")
+    
+    st.markdown("---")
     
     st.markdown("---")
     
@@ -412,91 +795,6 @@ with tab3:
             colors = RED_TO_GOLD[:len(encoded_vals)]
             axes[idx].bar(encoded_vals.index, encoded_vals.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
             axes[idx].set_title(f"Encoded {col}", fontweight='bold', color=PRIMARY_COLOR)
-            axes[idx].set_ylabel("Jumlah", fontweight='bold')
-            axes[idx].set_xlabel("Nilai Encoded", fontweight='bold')
-            axes[idx].grid(axis='y', alpha=0.3)
-        fig.tight_layout()
-        fig.patch.set_facecolor('white')
-        st.pyplot(fig)
-    
-    st.info("""
-    **Penjelasan Data Cleaning & Preprocessing:**
-    - **Fitur Numerik**: Menggunakan StandardScaler untuk normalisasi agar semua fitur memiliki skala yang sama (mean=0, std=1)
-    - **Fitur Kategorikal**: Menggunakan LabelEncoder untuk mengkonversi kategori string menjadi nilai integer
-    - **Train-Test Split**: Dataset dibagi 80-20 untuk pelatihan dan pengujian dengan random_state=42 untuk reproducibility
-    - **Variabel Target**: Weather Type dienkode menjadi nilai numerik untuk proses klasifikasi
-    """)
-    
-    st.markdown("---")
-    
-    # Model Selection
-    st.subheader("🎯 Pilih Model Klasifikasi")
-    
-    model_option = st.selectbox(
-        "Pilih satu model:",
-        ("Logistic Regression", "Random Forest", "Gaussian Naive Bayes", "SVM", "Gradient Boosting")
-    )
-    
-    # Model Initialization
-    if model_option == "Logistic Regression":
-        model = LogisticRegression(max_iter=1000)
-        model_description = "**Logistic Regression** adalah algoritma linear yang memprediksi probabilitas kelas menggunakan fungsi sigmoid."
-    elif model_option == "Random Forest":
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
-        model_description = "**Random Forest** menggunakan ensemble dari banyak decision trees untuk prediksi yang lebih robust."
-    elif model_option == "Gaussian Naive Bayes":
-        model = GaussianNB()
-        model_description = "**Gaussian Naive Bayes** menggunakan probabilitas Bayes dengan asumsi fitur independen."
-    elif model_option == "SVM":
-        model = SVC(probability=True, random_state=42)
-        model_description = "**Support Vector Machine (SVM)** mencari hyperplane optimal yang memaksimalkan margin antar kelas."
-    elif model_option == "Gradient Boosting":
-        model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
-        model_description = "**Gradient Boosting** membangun ensemble decision trees secara sequential untuk meminimalkan error."
-    
-    st.info(model_description)
-    
-    # Train Model
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    
-    # Evaluasi
-    st.subheader("📈 Hasil Evaluasi")
-    
-    accuracy = accuracy_score(y_test, y_pred)
-    
-    class_labels = le_target.classes_
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("🎯 Accuracy", f"{accuracy:.4f}")
-    
-    with col2:
-        precision_avg = precision_score(y_test, y_pred, average='weighted')
-        st.metric("📊 Precision", f"{precision_avg:.4f}")
-    
-    with col3:
-        recall_avg = recall_score(y_test, y_pred, average='weighted')
-        st.metric("🎪 Recall", f"{recall_avg:.4f}")
-    
-    with col4:
-        f1_avg = f1_score(y_test, y_pred, average='weighted')
-        st.metric("⚡ F1-Score", f"{f1_avg:.4f}")
-    
-    st.markdown("---")
-    
-    # Confusion Matrix
-    st.subheader("🔍 Matriks Kebingungan (Confusion Matrix)")
-    cm = confusion_matrix(y_test, y_pred)
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='RdYlGn', xticklabels=class_labels,
-                yticklabels=class_labels, ax=ax, cbar_kws={'label': 'Jumlah'})
-    ax.set_ylabel('Label Sebenarnya', fontweight='bold')
-    ax.set_xlabel('Label Prediksi', fontweight='bold')
-    ax.set_title(f'Matriks Kebingungan - {model_option}', fontweight='bold', color=PRIMARY_COLOR)
-    fig.patch.set_facecolor('white')
-    st.pyplot(fig)
     
     # Per-Class Metrics
     st.subheader("📊 Metrik per Kelas")
