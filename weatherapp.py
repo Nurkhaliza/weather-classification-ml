@@ -102,13 +102,9 @@ with tab1:
     
     with col1:
         st.markdown("""
-        **Dataset ini adalah data sintetis yang mensimulasikan data cuaca untuk tugas klasifikasi.**
+        **Sumber dan Deskripsi Dataset**
         
-        **🎯 Target:** Mengklasifikasikan cuaca menjadi 4 jenis:
-        - **🌧️ Rainy** (Hujan)
-        - **☀️ Sunny** (Cerah)
-        - **☁️ Cloudy** (Berawan)
-        - **❄️ Snowy** (Salju)
+        Dataset cuaca ini adalah dataset sintetis yang dikumpulkan untuk mensimulasikan kondisi cuaca real-world dengan cara yang komprehensif. Dataset ini mencakup data dari berbagai lokasi geografis selama periode waktu yang signifikan, mencakup 1000 observasi dengan 11 variabel yang mencakup aspek meteorologi dan geografis. Data ini dirancang untuk memberikan representasi yang seimbang dari empat jenis cuaca utama: Rainy, Sunny, Cloudy, dan Snowy.
         """)
     
     with col2:
@@ -120,29 +116,13 @@ with tab1:
     st.subheader("� Tujuan Analisis")
     
     st.markdown("""
-    Proyek ini bertujuan untuk melakukan analisis mendalam terhadap dataset cuaca menggunakan pendekatan machine learning. 
-    Pertama-tama, kami melakukan Exploratory Data Analysis (EDA) untuk memahami distribusi dan karakteristik data cuaca secara menyeluruh. 
-    Dalam tahap ini, kami menganalisis hubungan antara berbagai fitur dengan jenis cuaca yang diinginkan, serta mengidentifikasi pola-pola 
-    menarik dan outlier yang mungkin ada dalam dataset.
+    Penelitian ini bertujuan untuk mengembangkan dan membandingkan model-model machine learning yang dapat memprediksi jenis cuaca dengan akurat berdasarkan fitur-fitur meteorologi dan geografis yang tersedia. Dalam analisis ini, variabel respon (Y) yang digunakan adalah status cuaca (Weather Type) yang terdiri dari empat kategori: Rainy, Sunny, Cloudy, dan Snowy. Sementara itu, variabel-variabel prediktor meliputi suhu udara, kelembaban, kecepatan angin, tekanan atmosfer, indeks UV, jarak pandang, presipitasi, tutupan awan, musim, dan lokasi geografis.
     
-    Selanjutnya, kami mengembangkan dan membandingkan 5 algoritma machine learning yang berbeda untuk klasifikasi cuaca. 
-    Algoritma-algoritma yang digunakan meliputi Logistic Regression sebagai model linear, Random Forest sebagai ensemble method berbasis bagging, 
-    Gaussian Naive Bayes sebagai pendekatan probabilistik, Support Vector Machine untuk menangani data non-linear, dan Gradient Boosting sebagai 
-    ensemble method berbasis boosting. Dengan membandingkan performa kelima algoritma ini, kami dapat mengidentifikasi model mana yang paling efektif 
-    untuk task klasifikasi cuaca dan memahami trade-off antara kompleksitas model dan akurasi yang dihasilkan.
+    Variabel demografis dan lokasi dalam dataset meliputi lokasi pengambilan data (Urban, Coastal, Rural) serta musim (Winter, Spring, Summer, Fall) ketika data direkam. Variabel meteorologi utama mencakup suhu udara dalam satuan Celsius, kelembaban relatif dalam persen, dan kecepatan angin dalam kilometer per jam. Dataset juga mengandung fitur-fitur teknis seperti tekanan atmosfer (hPa), indeks ultraviolet (UV Index) 0-11, jarak pandang dalam kilometer, persentase presipitasi, dan deskripsi tutupan awan (Clear, Overcast, Partly Cloudy).
     
-    Tahap evaluasi dan visualisasi merupakan bagian krusial dari analisis ini. Kami mengevaluasi performa setiap model menggunakan berbagai metrik 
-    evaluasi seperti Accuracy, Precision, Recall, dan F1-Score untuk memberikan gambaran holistik tentang kualitas prediksi. 
-    Selain itu, kami juga membuat confusion matrix untuk menganalisis pola kesalahan klasifikasi per-class, 
-    ROC curves untuk memahami trade-off antara true positive rate dan false positive rate, serta visualisasi algorithm-specific insights 
-    seperti feature importance untuk Random Forest dan Gradient Boosting, coefficient values untuk Logistic Regression, dan prior probabilities 
-    untuk Gaussian Naive Bayes. Visualisasi-visualisasi ini membantu dalam memahami bagaimana setiap model membuat keputusan klasifikasi.
+    Kami melakukan Exploratory Data Analysis (EDA) untuk memahami pola dan distribusi data, mengidentifikasi hubungan antar variabel, serta mendeteksi anomali atau outlier. Selanjutnya, kami mengembangkan lima algoritma machine learning yang berbeda - Logistic Regression, Random Forest, Gaussian Naive Bayes, Support Vector Machine, dan Gradient Boosting - untuk mengklasifikasikan jenis cuaca. Setiap algoritma dievaluasi menggunakan metrik Accuracy, Precision, Recall, dan F1-Score, serta visualisasi confusion matrix dan ROC curves untuk memberikan pemahaman mendalam tentang performa masing-masing model.
     
-    Terakhir, kami membangun aplikasi prediction yang interaktif dan praktis untuk mengklasifikasikan jenis cuaca secara real-time. 
-    Aplikasi ini memungkinkan pengguna untuk memasukkan nilai-nilai fitur cuaca dan mendapatkan prediksi jenis cuaca beserta confidence score-nya. 
-    Selain itu, kami juga menyediakan penjelasan mendalam tentang cara kerja masing-masing algoritma sehingga pengguna dapat memahami dasar-dasar 
-    dari setiap pendekatan machine learning yang digunakan. Dengan kombinasi dari tools visualization, explanation, dan aplikasi interaktif, 
-    proyek ini memberikan insights yang berguna untuk decision-making dan pembelajaran machine learning.
+    Hasil analisis ini tidak hanya mengidentifikasi model dengan performa terbaik, tetapi juga memberikan insights tentang fitur-fitur mana yang paling penting dalam memprediksi jenis cuaca. Kami juga menyediakan penjelasan yang dapat dipahami tentang bagaimana setiap algoritma membuat keputusan, serta membangun aplikasi prediction yang interaktif untuk mengklasifikasikan jenis cuaca secara real-time. Dengan kombinasi dari tools visualization, explanation, dan aplikasi interaktif, penelitian ini memberikan kontribusi dalam pengembangan sistem prediksi cuaca berbasis machine learning yang akurat dan interpretable.
     """)
     
     st.markdown("---")
@@ -229,6 +209,122 @@ with tab2:
         ax.grid(axis='y', alpha=0.3)
         fig.patch.set_facecolor('white')
         st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("☁️ Distribusi Cloud Cover by Weather Type")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        cloud_weather = pd.crosstab(df["Cloud Cover"], df["Weather Type"])
+        cloud_weather.plot(kind='bar', ax=ax, color=RED_TO_GOLD, alpha=0.8, edgecolor=PRIMARY_COLOR)
+        ax.set_ylabel("Count", fontweight='bold')
+        ax.set_xlabel("Cloud Cover", fontweight='bold')
+        ax.set_title("Hubungan Cloud Cover dengan Weather Type", fontweight='bold', color=PRIMARY_COLOR)
+        ax.legend(title="Weather Type", bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    with col2:
+        st.subheader("☀️ Distribusi UV Index by Weather Type")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        weather_types = df["Weather Type"].unique()
+        for i, weather in enumerate(weather_types):
+            data = df[df["Weather Type"] == weather]["UV Index"]
+            ax.hist(data, bins=20, alpha=0.6, label=weather, color=RED_TO_GOLD[i % len(RED_TO_GOLD)], edgecolor=PRIMARY_COLOR)
+        ax.set_xlabel("UV Index", fontweight='bold')
+        ax.set_ylabel("Frequency", fontweight='bold')
+        ax.set_title("Distribusi UV Index per Weather Type", fontweight='bold', color=PRIMARY_COLOR)
+        ax.legend()
+        ax.grid(axis='y', alpha=0.3)
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🍂 Distribusi Season")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        season_counts = df["Season"].value_counts()
+        colors = RED_TO_GOLD[:len(season_counts)]
+        ax.bar(season_counts.index, season_counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+        ax.set_ylabel("Count", fontweight='bold')
+        ax.set_title("Jumlah Data per Season", fontweight='bold', color=PRIMARY_COLOR)
+        ax.grid(axis='y', alpha=0.3)
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    with col2:
+        st.subheader("📍 Distribusi Location")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        location_counts = df["Location"].value_counts()
+        colors = RED_TO_GOLD[:len(location_counts)]
+        ax.bar(location_counts.index, location_counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+        ax.set_ylabel("Count", fontweight='bold')
+        ax.set_title("Jumlah Data per Location", fontweight='bold', color=PRIMARY_COLOR)
+        ax.grid(axis='y', alpha=0.3)
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    st.subheader("💧 Distribusi Humidity")
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.hist(df["Humidity"], bins=30, color=SECONDARY_COLOR, alpha=0.7, edgecolor=PRIMARY_COLOR)
+    ax.set_xlabel("Humidity (%)", fontweight='bold')
+    ax.set_ylabel("Frequency", fontweight='bold')
+    ax.set_title("Distribusi Humidity", fontweight='bold', color=PRIMARY_COLOR)
+    ax.grid(axis='y', alpha=0.3)
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    # Distribution Analysis Explanations
+    st.subheader("📚 Analisis Distribusi Features")
+    
+    st.markdown("""
+    **☁️ Cloud Cover (Tutupan Awan):**
+    
+    Kondisi tutupan awan sangat mempengaruhi jenis cuaca, dengan cuaca cerah yang cenderung terjadi pada kondisi langit yang lebih cerah dan cuaca hujan atau berawan yang terjadi pada kondisi mendung. Dari distribusi di atas, kita dapat melihat bahwa setiap kategori Cloud Cover memiliki asosiasi kuat dengan jenis cuaca tertentu. Kategori "Clear" mendominasi pada cuaca Sunny, sementara "Overcast" lebih sering dikaitkan dengan cuaca Rainy dan Cloudy.
+    """)
+    
+    st.markdown("""
+    **☀️ UV Index (Indeks Ultraviolet):**
+    
+    UV Index menunjukkan seberapa kuat radiasi UV dari matahari. Ketika cuaca cerah, sinar matahari tidak terhalang, sehingga indeks UV cenderung lebih tinggi. Sebaliknya, ketika cuaca hujan, berawan, atau bersalju, awan dan partikel lainnya di atmosfer menghalangi sinar matahari, sehingga indeks UV menjadi lebih rendah. 
+    
+    Asumsi mengapa cuaca salju ada yang berdistribusi tinggi adalah sebagai berikut:
+    - **Ketinggian lokasi:** Jika cuaca bersalju terjadi di daerah dataran yang tinggi, indeks UV juga bisa lebih tinggi karena semakin tinggi lokasi tempat, sinar UV lebih kuat.
+    - **Refleksi dari salju:** Salju memiliki kemampuan untuk memantulkan sinar UV, sehingga meskipun cuaca mungkin berawan, sinar UV yang ada bisa dipantulkan dari permukaan salju dapat meningkatkan nilai indeks UV.
+    """)
+    
+    st.markdown("""
+    **🍂 Season (Musim):**
+    
+    Musim mempengaruhi jenis cuaca yang dominan, dengan cuaca bersalju yang hampir eksklusif terjadi di musim dingin dan cuaca cerah lebih sering terjadi di musim panas. Distribusi musim dalam dataset menunjukkan variabilitas yang membantu model untuk mempelajari pola musiman dalam klasifikasi cuaca. Setiap musim membawa karakteristik cuaca yang unik dan dapat menjadi fitur prediktif yang kuat.
+    """)
+    
+    st.markdown("""
+    **📍 Location (Lokasi):**
+    
+    Lokasi geografis juga memiliki pengaruh signifikan, di mana daerah pegunungan lebih sering mengalami cuaca bersalju, sedangkan daerah pantai lebih banyak mengalami cuaca cerah dan berawan. Perbedaan distribusi lokasi menunjukkan bahwa model perlu mempertimbangkan konteks geografis untuk prediksi yang akurat. Lokasi Urban, Coastal, dan Rural masing-masing memiliki karakteristik cuaca yang berbeda.
+    """)
+    
+    st.markdown("""
+    **🌤️ Karakteristik Jenis Cuaca:**
+    
+    - **Cuaca Cerah (Sunny):** Cenderung terjadi pada suhu yang lebih tinggi dengan kelembaban dan curah hujan yang lebih rendah serta visibilitas yang paling baik. Indeks UV juga tinggi dan langit cenderung jelas (Clear).
+    
+    - **Cuaca Hujan (Rainy) dan Bersalju (Snowy):** Menunjukkan kelembaban tinggi, curah hujan yang signifikan, dan visibilitas yang lebih rendah, dengan suhu yang berkaitan dengan karakteristik masing-masing. Cuaca Rainy terjadi pada suhu sedang sementara Snowy pada suhu rendah.
+    
+    - **Cuaca Berawan (Cloudy):** Menunjukkan distribusi yang lebih bervariasi pada semua fitur, mencerminkan kondisi cuaca yang lebih beragam. Kategori ini menjadi transisi antara cuaca cerah dan cuaca ekstrem seperti hujan atau salju.
+    """)
 
 # ====================== TAB 3: MACHINE LEARNING ======================
 with tab3:
@@ -257,6 +353,79 @@ with tab3:
     st.success(f"✅ Data preprocessing selesai!")
     st.write(f"- Training set: {len(X_train)} samples")
     st.write(f"- Testing set: {len(X_test)} samples")
+    
+    st.markdown("---")
+    
+    st.subheader("📊 Visualisasi Data Cleaning & Preprocessing")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Before Preprocessing (Raw Data)**")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        numerical_cols_raw = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)", 
+                              "Atmospheric Pressure", "UV Index", "Visibility (km)"]
+        ax.boxplot([df[col].values for col in numerical_cols_raw], labels=numerical_cols_raw)
+        ax.set_ylabel("Value", fontweight='bold')
+        ax.set_title("Data Numerik Sebelum Scaling", fontweight='bold', color=PRIMARY_COLOR)
+        ax.tick_params(axis='x', rotation=45)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    with col2:
+        st.write("**After Preprocessing (Scaled Data)**")
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.boxplot([df_processed[col].values for col in numerical_cols], labels=numerical_cols)
+        ax.set_ylabel("Scaled Value", fontweight='bold')
+        ax.set_title("Data Numerik Setelah Standardization", fontweight='bold', color=PRIMARY_COLOR)
+        ax.tick_params(axis='x', rotation=45)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Categorical Features Before Encoding**")
+        fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+        categorical_cols = ["Cloud Cover", "Season", "Location"]
+        for idx, col in enumerate(categorical_cols):
+            counts = df[col].value_counts()
+            colors = RED_TO_GOLD[:len(counts)]
+            axes[idx].bar(counts.index, counts.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+            axes[idx].set_title(f"Distribusi {col}", fontweight='bold', color=PRIMARY_COLOR)
+            axes[idx].set_ylabel("Count", fontweight='bold')
+            axes[idx].tick_params(axis='x', rotation=45)
+            axes[idx].grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    with col2:
+        st.write("**Categorical Features After Encoding**")
+        fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+        for idx, col in enumerate(categorical_cols):
+            encoded_vals = df_processed[col].value_counts().sort_index()
+            colors = RED_TO_GOLD[:len(encoded_vals)]
+            axes[idx].bar(encoded_vals.index, encoded_vals.values, color=colors, alpha=0.7, edgecolor=PRIMARY_COLOR)
+            axes[idx].set_title(f"Encoded {col}", fontweight='bold', color=PRIMARY_COLOR)
+            axes[idx].set_ylabel("Count", fontweight='bold')
+            axes[idx].set_xlabel("Encoded Value", fontweight='bold')
+            axes[idx].grid(axis='y', alpha=0.3)
+        fig.tight_layout()
+        fig.patch.set_facecolor('white')
+        st.pyplot(fig)
+    
+    st.info("""
+    **Data Cleaning & Preprocessing Explanation:**
+    - **Numerical Features**: Menggunakan StandardScaler untuk normalisasi agar semua fitur memiliki skala yang sama (mean=0, std=1)
+    - **Categorical Features**: Menggunakan LabelEncoder untuk mengkonversi kategori string menjadi integer values
+    - **Train-Test Split**: Dataset dibagi 80-20 untuk pelatihan dan pengujian dengan random_state=42 untuk reproducibility
+    - **Target Variable**: Weather Type dienkode menjadi numerical values untuk proses klasifikasi
+    """)
     
     st.markdown("---")
     
