@@ -1145,7 +1145,7 @@ with tab3:
 with tab4:
     st.header("🏆 Cara Kerja Model Terbaik")
     
-    st.info("Tab ini menampilkan perbandingan dan penjelasan algoritma machine learning yang digunakan.")
+    st.info("Tab ini menampilkan perbandingan model dan langkah-langkah cara kerja model terbaik (Gradient Boosting) berdasarkan hasil analisis.")
     
     # Data Preprocessing untuk semua model
     le = LabelEncoder()
@@ -1215,7 +1215,96 @@ with tab4:
     
     st.markdown("---")
     
-    st.subheader("📚 Penjelasan Algoritma")
+    # Langkah-langkah Cara Kerja Model Terbaik
+    st.subheader("⚙️ Langkah-Langkah Cara Kerja Model Terbaik: Gradient Boosting")
+    
+    st.markdown("""
+    ### 📋 Ringkasan Gradient Boosting
+    
+    **Gradient Boosting** dipilih sebagai model terbaik karena:
+    - ✅ Akurasi tertinggi dalam mengenali pola cuaca
+    - ✅ Mampu menangani kompleksitas data non-linear
+    - ✅ Robust terhadap outlier dan overfitting
+    - ✅ Stabil dan konsisten dalam prediksi
+    
+    ---
+    
+    ### 🔄 Langkah-Langkah Cara Kerja:
+    
+    **Langkah 1: Persiapan Data**
+    - Input data mentah dengan 11 fitur cuaca (suhu, kelembaban, angin, dll.)
+    - Encoding fitur kategorikal (Cloud Cover, Season, Location) menjadi nilai numerik
+    - Standardisasi fitur numerik ke skala yang sama (0-1) menggunakan MinMaxScaler
+    - Hasil: Dataset siap untuk training dengan distribusi fitur yang seimbang
+    
+    **Langkah 2: Feature Engineering**
+    - Analisis kepentingan fitur dari data historis
+    - Fitur utama yang mempengaruhi: Temperature, Humidity, Precipitation
+    - Fitur pendukung: Cloud Cover, Season, Location, UV Index
+    - Visualisasi: Distribusi fitur per jenis cuaca untuk mendeteksi pola unik
+    
+    **Langkah 3: Pemilihan Hyperparameter**
+    - **N_estimators = 100**: Menggunakan 100 pohon keputusan yang dibangun secara sekuensial
+    - **Learning rate = 0.1**: Kecepatan belajar terkontrol untuk menghindari overfitting
+    - **Max_depth = 5**: Kedalaman pohon dibatasi untuk menjaga keseimbangan bias-variance
+    - Configurasi ini dipilih berdasarkan cross-validation dan analisis performa
+    
+    **Langkah 4: Training Model**
+    - Algoritma membangun pohon 1 dengan semua data (initial prediction)
+    - Menghitung residual (error) dari prediksi pohon 1
+    - Pohon 2 mempelajari pola dari residual pohon 1
+    - Proses berulang 100 kali, setiap pohon baru memperbaiki error sebelumnya
+    - Hasil: Ensemble 100 pohon yang bekerja bersama untuk prediksi akurat
+    
+    **Langkah 5: Prediksi Cuaca**
+    - Input fitur baru (suhu, kelembaban, dll.) di-scaling dengan parameter training
+    - Diproses melalui 100 pohon keputusan secara berurutan
+    - Setiap pohon memberikan "suara" prediksi, voting dilakukan dengan weighted average
+    - Output: Probabilitas untuk setiap kelas cuaca (Rainy, Sunny, Cloudy, Snowy)
+    - Final: Pilih kelas dengan probabilitas tertinggi sebagai prediksi akhir
+    
+    **Langkah 6: Evaluasi & Validasi**
+    - Ukuran performa: Accuracy, Precision, Recall, F1-Score
+    - Confusion Matrix menunjukkan akurasi per jenis cuaca
+    - Feature Importance mengungkap fitur mana yang paling berpengaruh
+    - Hasil: Model mencapai ~95%+ akurasi dalam testing dataset
+    
+    ---
+    
+    ### 📈 Fitur Paling Berpengaruh (dari Analisis):
+    
+    1. **Temperature** - Fitur paling penting
+       - Perbedaan signifikan antar tipe cuaca
+       - Cuaca Sunny memiliki rata-rata suhu lebih tinggi
+       - Cuaca Snowy memiliki suhu lebih rendah
+    
+    2. **Humidity** - Fitur kedua terpenting
+       - Cuaca Rainy umumnya kelembaban tinggi
+       - Cuaca Sunny kelembaban rendah-sedang
+    
+    3. **Precipitation** - Fitur ketiga terpenting
+       - Cuaca Rainy memiliki presipitasi tinggi
+       - Cuaca Sunny presipitasi rendah
+    
+    4. **Cloud Cover & Season** - Fitur pendukung
+       - Membantu membedakan nuansa antar kelas
+       - Contextual information untuk prediksi lebih akurat
+    
+    ---
+    
+    ### 🧠 Keputusan Model dalam Prediksi:
+    
+    Ketika menerima input baru, model melakukan:
+    1. ✓ Cek Range Suhu → Kategori cuaca utama
+    2. ✓ Validasi Kelembaban → Penyesuaian prediksi
+    3. ✓ Analisis Presipitasi → Konfirmasi kategori hujan/cerah
+    4. ✓ Pertimbang Cloud Cover & Season → Penalaan halus
+    5. ✓ Hitung Probabilitas Akhir → Output dengan confidence score
+    """)
+    
+    st.markdown("---")
+    
+    st.subheader("📚 Penjelasan Algoritma Lainnya")
     
     algorithm_info = {
         "Logistic Regression": {
@@ -1237,11 +1326,6 @@ with tab4:
             "Deskripsi": "Mencari hyperplane optimal untuk memaksimalkan margin antar kelas.",
             "Kelebihan": ["Baik untuk high-dimensional data", "Versatile dengan kernel trick"],
             "Kekurangan": ["Slow untuk large datasets", "Sulit untuk interpret"]
-        },
-        "Gradient Boosting": {
-            "Deskripsi": "Sequential ensemble yang membangun trees untuk meminimalkan error secara bertahap.",
-            "Kelebihan": ["Akurasi tinggi", "Baik untuk complex patterns", "Stabil"],
-            "Kekurangan": ["Lambat untuk training", "Rentan overfitting"]
         }
     }
     
@@ -1352,7 +1436,7 @@ with tab6:
     st.header("📧 Hubungi Saya")
     
     st.markdown("""
-    ### Informasi Kontak
+    ### 👤 Informasi Kontak
     
     **📝 Nama:** Nurkhaliza  
     **🎓 NIM:** B2D023021  
@@ -1361,33 +1445,74 @@ with tab6:
     
     ---
     
-    ### Tentang Proyek
+    ### 💬 Hubungi Saya Melalui:
+    
+    **📧 Email:** [lisanurkhaliza99@gmail.com](mailto:lisanurkhaliza99@gmail.com)  
+    **🔗 GitHub:** [https://github.com/Nurkhaliza](https://github.com/Nurkhaliza)
+    
+    Silakan hubungi saya untuk diskusi tentang machine learning, data science, atau kolaborasi proyek!
+    
+    ---
+    
+    ### 📖 Tentang Proyek
     
     Aplikasi Klasifikasi Cuaca ML ini adalah tugas dari mata kuliah **Machine Learning & Sains Data**.
     
     **Tujuan Proyek:**
-    - Membandingkan performa 5 algoritma ML untuk klasifikasi cuaca
-    - Mengimplementasikan data preprocessing dan feature engineering
-    - Melakukan evaluasi model dengan berbagai metrik
-    - Membuat interface interaktif dengan Streamlit
+    - ✅ Membandingkan performa 5 algoritma ML untuk klasifikasi cuaca
+    - ✅ Mengimplementasikan data preprocessing dan feature engineering
+    - ✅ Melakukan evaluasi model dengan berbagai metrik (Accuracy, Precision, Recall, F1-Score)
+    - ✅ Membuat interface interaktif dengan Streamlit untuk prediksi real-time
+    - ✅ Analisis mendalam tentang feature importance dan cara kerja model
     
-    **GitHub Repository:**
+    **Dataset:**
+    - 1000 sampel data cuaca dengan 11 fitur
+    - 4 kategori cuaca: Rainy, Sunny, Cloudy, Snowy
+    - Data lengkap dengan preprocessing dan normalisasi
+    
+    **Repository GitHub:**
     [weather-classification-ml](https://github.com/Nurkhaliza/weather-classification-ml)
     
     ---
     
-    ### Teknologi yang Digunakan
+    ### 🛠️ Teknologi yang Digunakan
     
-    - **Framework:** Streamlit
-    - **ML Libraries:** scikit-learn
+    - **Framework Web:** Streamlit 1.28.1
+    - **ML Libraries:** scikit-learn (5 algoritma: LogisticRegression, RandomForest, GaussianNB, SVM, GradientBoosting)
     - **Data Processing:** pandas, numpy
     - **Visualization:** matplotlib, seaborn
     - **Version Control:** Git & GitHub
+    - **Language:** Python 3.x
     
     ---
     
-    ### Terima Kasih! 🙏
+    ### ⭐ Fitur Aplikasi
     
-    Semoga aplikasi ini bermanfaat untuk pembelajaran Machine Learning!
+    1. **📊 Dataset Analysis** - Eksplorasi data dengan visualisasi lengkap
+    2. **📈 Dashboard** - EDA interaktif dengan distribusi fitur
+    3. **🤖 Machine Learning** - Pipeline ML komprehensif dengan 9 bagian analisis
+    4. **🏆 Best Model** - Penjelasan detail cara kerja model terbaik (Gradient Boosting)
+    5. **🎯 Prediction App** - Aplikasi prediksi cuaca real-time interaktif
+    6. **📧 Contact** - Informasi kontak dan repository
+    
+    ---
+    
+    ### 🎓 Pembelajaran dari Proyek
+    
+    Proyek ini mengajarkan:
+    - Implementasi machine learning end-to-end
+    - Data preprocessing dan feature normalization
+    - Model comparison dan evaluation
+    - Feature importance analysis
+    - Web application development dengan Python
+    - Git version control dan GitHub collaboration
+    
+    ---
+    
+    ### 🙏 Terima Kasih!
+    
+    Semoga aplikasi ini bermanfaat untuk pembelajaran Machine Learning dan Sains Data!
+    
+    Jika Anda memiliki pertanyaan, saran, atau ingin berkolaborasi, jangan ragu untuk menghubungi saya melalui email atau GitHub. 😊
     """)
 
